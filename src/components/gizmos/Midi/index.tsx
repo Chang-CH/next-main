@@ -9,7 +9,7 @@ import {
 
 const MidiPlayer = () => {
   const canvasRef = useRef(null);
-  const lineCount = 10;
+  const lineCount = marbleMachineKeys.length;
   const lookAhead = 50;
   const totalLength = marbleMachineLength;
 

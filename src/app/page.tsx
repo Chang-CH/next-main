@@ -1,7 +1,7 @@
 import BackgroundDots from "@/components/backgrounds/dots";
 import FancyCarousel from "@/components/common/FancyCarousel";
 import { experience } from "./data";
-import Image from "next/image";
+import MidiPlayer from "@/components/gizmos/Midi";
 
 const Home = ({
   _params,
@@ -31,7 +31,7 @@ const Home = ({
             </div>
           </div>
           <div className="relative flex grow items-start h-full">
-            <Image src="next.svg" alt="gizmo" loading="eager" fill />
+            <MidiPlayer />
           </div>
         </div>
         <div className="flex flex-col grow items-center justify-center  w-full">
