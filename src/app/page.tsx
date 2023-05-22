@@ -1,6 +1,4 @@
 import BackgroundDots from "@/components/backgrounds/dots";
-import FancyCarousel from "@/components/common/FancyCarousel";
-import { experience } from "./data";
 import MidiPlayer from "@/components/gizmos/Midi";
 
 const Home = ({
@@ -30,17 +28,9 @@ const Home = ({
               <p>Computer Science @ NUS | Web Developer</p>
             </div>
           </div>
-          <div className="relative flex grow items-start h-full">
+          <div className="relative flex grow h-full items-center">
             <MidiPlayer />
           </div>
-        </div>
-        <div className="flex flex-col grow items-center justify-center  w-full">
-          <h2 className="text-3xl">Work Experience</h2>
-          <FancyCarousel source={experience} />
-        </div>
-        <div className="flex flex-col grow items-center justify-center  w-full">
-          <h2>Personal projects</h2>
-          <div className="flex flex-row grow items-center justify-center  w-full"></div>
         </div>
       </div>
     </BackgroundDots>
