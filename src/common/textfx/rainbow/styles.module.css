@@ -1,0 +1,19 @@
+@keyframes text-gradient {
+    start {
+        background-position: 10% 0%;
+    }
+    50% {
+        background-position: 90% 100%;
+    }
+
+    to {
+        background-position: 10% 0%;
+    }
+}
+.gradient-text {
+    background: linear-gradient(90deg, #f00, #0f0, #00f);
+    background-clip: text;
+    color: transparent;
+    background-size: 200% 200%;
+    animation: text-gradient 3s infinite;
+}

@@ -1,5 +1,4 @@
 type PageProps = {
-  children: React.ReactNode;
   dotColour?: string;
   bgColour?: string;
   dotRadius?: string;
@@ -12,7 +11,6 @@ type PageProps = {
 };
 
 const BackgroundDots = ({
-  children,
   dotColour,
   bgColour,
   dotRadius,
@@ -26,15 +24,19 @@ const BackgroundDots = ({
       {...otherProps}
       className={`${className ?? ""}`}
       style={{
-        ...style,
         backgroundImage: `radial-gradient(circle at 1px 1px, ${
           dotColour ?? ""
         }  ${dotRadius ?? "1px"}, ${bgColour ?? ""} 0)`,
         backgroundSize: `${dotSpacing ?? "40px"} ${dotSpacing ?? "40px"}`,
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        zIndex: -1,
+        top: 0,
+        left: 0,
+        ...style,
       }}
-    >
-      {children}
-    </div>
+    />
   );
 };
 

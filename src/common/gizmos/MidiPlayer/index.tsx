@@ -39,7 +39,7 @@ const MidiPlayer = () => {
     ctx.clearRect(0, 0, width, height);
 
     // Draw vertical lines
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "white";
     for (let i = 1; i <= lineCount; i++) {
       const x = i * lineSpacing;
       ctx.beginPath();
@@ -49,7 +49,7 @@ const MidiPlayer = () => {
     }
 
     // util function to draw a note
-    const drawNote = (lane: number, ypos: number, colour = "black") => {
+    const drawNote = (lane: number, ypos: number, colour = "white") => {
       ctx.beginPath();
       ctx.arc((lane + 1) * lineSpacing, ypos * height, 10, 0, 2 * Math.PI);
       ctx.fillStyle = colour;
@@ -60,7 +60,7 @@ const MidiPlayer = () => {
     const noteNum =
       (performance.now() - canvasStart.current) / 1000 / beatLength;
     const keyNumber = Math.ceil(noteNum);
-    const keyIndex = keyNumber % totalLength;
+    const keyIndex = keyNumber;
 
     // render notes
     for (let i = 0; i < lookAhead; i++) {
@@ -77,7 +77,6 @@ const MidiPlayer = () => {
     // play audio
     if (!audioPlaying) return;
 
-    console.log(performance.now() / 1000, audioContextRef.current?.currentTime);
     const target = noteNum + 2;
     for (let i = Math.max(melodyPosition.current, keyIndex); i <= target; i++) {
       const notes: string[] | undefined = piece.notes[i % totalLength];
@@ -102,7 +101,6 @@ const MidiPlayer = () => {
     const context: CanvasRenderingContext2D | null = canvas.getContext("2d");
     if (context === null) return;
 
-    // @ts-ignore for legacy browsers
     const AudioContext = window.AudioContext || window?.webkitAudioContext;
     const audioContext = new AudioContext();
     audioContextRef.current = audioContext;
@@ -139,9 +137,9 @@ const MidiPlayer = () => {
   }, [draw]);
 
   return (
-    <>
+    <div className="flex h-full w-full justify-center">
       <button
-        className="relative flex justify-center items-center"
+        className="relative flex justify-center items-center w-full"
         onClick={() => {
           if (audioContextRef?.current?.state === "suspended") {
             audioContextRef.current?.resume().catch(err => console.log(err));
@@ -155,12 +153,29 @@ const MidiPlayer = () => {
         }}
       >
         {audioPlaying ? null : (
-          <FaVolumeMute className="z-10 absolute m-auto w-[100px] h-[100px]" />
+          <FaVolumeMute
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: "30%",
+              height: "30%",
+              translate: "-50% -50%",
+            }}
+          />
         )}
-        <canvas className="w-[512px] h-[512px]" ref={canvasRef} />
+        <canvas
+          style={{
+            maxHeight: "90vh",
+            minHeight: "400px",
+            width: "100%",
+            height: "100%",
+          }}
+          ref={canvasRef}
+        />
         <audio ref={audioRef} />
       </button>
-    </>
+    </div>
   );
 };
 

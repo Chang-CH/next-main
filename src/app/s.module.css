@@ -1,0 +1,10 @@
+.textLink {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    margin-bottom: 2px;
+}
+
+.textLink:hover {
+    border-bottom: 2px solid orange;
+    margin-bottom: 0;
+}
