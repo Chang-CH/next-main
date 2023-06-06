@@ -20,8 +20,8 @@ const Timeline = ({ data }: { data: TimelineData[] }) => {
                   className={styles.image}
                   src={entry.preview}
                   alt={entry.title}
-                  width={300}
-                  height={300}
+                  width={200}
+                  height={200}
                 />
               ) : null}
               <div className={styles.cardBody}>
