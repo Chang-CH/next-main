@@ -1,5 +1,7 @@
 module.exports = {
     extends: [
+      'next',
+      'prettier',
       'eslint:recommended',
       'plugin:react/recommended',
       'plugin:import/recommended',

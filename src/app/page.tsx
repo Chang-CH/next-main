@@ -11,13 +11,7 @@ import Link from "next/link";
 import styles from "./s.module.css";
 import Timeline from "@/common/stdlib/timeline";
 
-const Home = ({
-  _params,
-  _searchParams,
-}: {
-  _params: { slug: string };
-  _searchParams?: { [key: string]: string | string[] | undefined };
-}) => {
+const Home = () => {
   return (
     <div className="relative flex grow min-w-full items-center justify-center">
       <div className="flex flex-col max-w-[1200px] w-full items-center justify-center min-h-screen">

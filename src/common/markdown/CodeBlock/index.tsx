@@ -11,11 +11,12 @@ const CodeBlock = (props: { children?: React.ReactNode }) => {
     return <pre>{props?.children ?? ""}</pre>;
   }
 
-  // eslint-disable-next-line
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const childProps: {
     className?: string;
     children: string;
     [key: string]: any;
+    // @ts-ignore
   } = props?.children?.props;
   const className: string = childProps?.className ?? "";
   const matches = className.match(/language-(?<lang>.*)/);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FaVolumeMute } from "react-icons/fa";
 import { pieceMarbleMachine } from "./constants";
 import { keyMap } from "./sounds/sounds";
@@ -27,73 +27,80 @@ const MidiPlayer = () => {
   }>({});
   const [audioPlaying, setAudioPlaying] = useState(false);
 
-  const draw = (ctx: CanvasRenderingContext2D, audioContext: AudioContext) => {
-    ctx.canvas.width = ctx.canvas.clientWidth;
-    ctx.canvas.height = ctx.canvas.clientHeight;
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D, audioContext: AudioContext) => {
+      ctx.canvas.width = ctx.canvas.clientWidth;
+      ctx.canvas.height = ctx.canvas.clientHeight;
 
-    const width = ctx.canvas.width;
-    const height = ctx.canvas.height;
-    const lineSpacing = width / (lineCount + 1);
+      const width = ctx.canvas.width;
+      const height = ctx.canvas.height;
+      const lineSpacing = width / (lineCount + 1);
 
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
 
-    // Draw vertical lines
-    ctx.strokeStyle = "white";
-    for (let i = 1; i <= lineCount; i++) {
-      const x = i * lineSpacing;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-
-    // util function to draw a note
-    const drawNote = (lane: number, ypos: number, colour = "white") => {
-      ctx.beginPath();
-      ctx.arc((lane + 1) * lineSpacing, ypos * height, 10, 0, 2 * Math.PI);
-      ctx.fillStyle = colour;
-      ctx.fill();
-    };
-
-    // note positions
-    const noteNum =
-      (performance.now() - canvasStart.current) / 1000 / beatLength;
-    const keyNumber = Math.ceil(noteNum);
-    const keyIndex = keyNumber;
-
-    // render notes
-    for (let i = 0; i < lookAhead; i++) {
-      const notes: string[] | undefined =
-        piece.notes[(keyIndex + i) % totalLength];
-      if (!notes) continue;
-
-      for (const note of notes) {
-        const pos = i + (keyNumber - noteNum);
-        drawNote(piece.keys.indexOf(note), 1 - pos / lookAhead);
+      // Draw vertical lines
+      ctx.strokeStyle = "white";
+      for (let i = 1; i <= lineCount; i++) {
+        const x = i * lineSpacing;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
       }
-    }
 
-    // play audio
-    if (!audioPlaying) return;
+      // util function to draw a note
+      const drawNote = (lane: number, ypos: number, colour = "white") => {
+        ctx.beginPath();
+        ctx.arc((lane + 1) * lineSpacing, ypos * height, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = colour;
+        ctx.fill();
+      };
 
-    const target = noteNum + 2;
-    for (let i = Math.max(melodyPosition.current, keyIndex); i <= target; i++) {
-      const notes: string[] | undefined = piece.notes[i % totalLength];
-      if (!notes) continue;
+      // note positions
+      const noteNum =
+        (performance.now() - canvasStart.current) / 1000 / beatLength;
+      const keyNumber = Math.ceil(noteNum);
+      const keyIndex = keyNumber;
 
-      for (const note of notes) {
-        audioBuffers.current[note]?.node?.start(
-          i * beatLength + canvasStart.current / 1000 - melodyStart.current
-        );
-        audioBuffers.current[note].node = audioContext.createBufferSource();
-        audioBuffers.current[note].node.buffer =
-          audioBuffers.current[note].buffer;
-        audioBuffers.current[note].node.connect(audioContext.destination);
+      // render notes
+      for (let i = 0; i < lookAhead; i++) {
+        const notes: string[] | undefined =
+          piece.notes[(keyIndex + i) % totalLength];
+        if (!notes) continue;
+
+        for (const note of notes) {
+          const pos = i + (keyNumber - noteNum);
+          drawNote(piece.keys.indexOf(note), 1 - pos / lookAhead);
+        }
       }
-    }
-    melodyPosition.current = Math.ceil(target);
-  };
+
+      // play audio
+      if (!audioPlaying) return;
+
+      const target = noteNum + 2;
+      for (
+        let i = Math.max(melodyPosition.current, keyIndex);
+        i <= target;
+        i++
+      ) {
+        const notes: string[] | undefined = piece.notes[i % totalLength];
+        if (!notes) continue;
+
+        for (const note of notes) {
+          audioBuffers.current[note]?.node?.start(
+            i * beatLength + canvasStart.current / 1000 - melodyStart.current
+          );
+          audioBuffers.current[note].node = audioContext.createBufferSource();
+          audioBuffers.current[note].node.buffer =
+            audioBuffers.current[note].buffer;
+          audioBuffers.current[note].node.connect(audioContext.destination);
+        }
+      }
+      melodyPosition.current = Math.ceil(target);
+    },
+    [audioPlaying]
+  );
 
   useEffect(() => {
     if (canvasRef.current === null || audioRef.current === null) return;

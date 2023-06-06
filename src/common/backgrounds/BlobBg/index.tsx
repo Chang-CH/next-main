@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import styles from "./styles.module.css";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 
 // isolate the client component so children of background do not need to be client component
 const BlobBg = () => {
