@@ -10,6 +10,7 @@ import Link from "next/link";
  */
 import styles from "./s.module.css";
 import Timeline from "@/common/stdlib/timeline";
+import TurboCard from "@/common/stdlib/card/TurboCard";
 
 const Home = () => {
   return (
@@ -31,7 +32,7 @@ const Home = () => {
             <div>
               <h1 className="text-8xl">Hello :)</h1>
               <p className="text-2xl">My name is Chuan Hao</p>
-              <p>Computer Science @ NUS | Web Developer</p>
+              <p>I write JavaScript not tragedies</p>
             </div>
           </div>
           <div className="relative flex grow h-full justify-center">
@@ -46,18 +47,12 @@ const Home = () => {
             {
               title: "Jr. Solution Developer",
               timeline: "May 2023 - July 2023",
-              tags: [
-                "Python",
-                "Tableau",
-                "Salesforce Lightning Components",
-                "HTML",
-                "JS",
-              ],
+              tags: ["Python", "Tableau", "SQL", "Snowflake"],
               preview: "/work/F5.svg",
               description: (
                 <p>
                   • Worked with F5&apos;s Global Support Innovation Lab team on
-                  the internal management toolings
+                  the internal management tools
                   <br />• Created a dashboard to alert Support Engineers about
                   stale support cases <br /> • Worked on migrating various
                   dashboards to Snowflake data sources from Tron
@@ -116,6 +111,42 @@ const Home = () => {
             },
           ]}
         />
+        <div className="flex max-w-[1200px] w-full items-center justify-center min-h-screen">
+          <h2 className="text-2xl">(Some) Projects</h2>
+          <div className="h-full flex-row justify-evenly space-x-1 min-h-[300px]">
+            <TurboCard className="w-full justify-center text-center">
+              <h3 className="text-xl">
+                <strong>mfe-proxy</strong>
+              </h3>
+              <p className="text-s">
+                proxy to local or remote micro front ends on the go
+              </p>
+            </TurboCard>
+            <TurboCard className="w-full justify-center text-center">
+              <h3 className="text-xl">
+                <strong>draw2p</strong>
+              </h3>
+              <p className="text-s">
+                drawing collaboration app using p2p WebRTC
+              </p>
+            </TurboCard>
+            <TurboCard className="w-full justify-center text-center">
+              <h3 className="text-xl">
+                <strong>Hireside</strong>
+              </h3>
+              <p className="text-s">
+                Instant price estimates for renovation works from web scraped
+                data
+              </p>
+            </TurboCard>
+            <TurboCard className="w-full justify-center text-center">
+              <h3 className="text-xl">
+                <strong>Others</strong>
+              </h3>
+              <p className="text-s">Gizmos, websites, and other random stuff</p>
+            </TurboCard>
+          </div>
+        </div>
         <div className="h-[50vh]" />
       </div>
       <BlobBg />

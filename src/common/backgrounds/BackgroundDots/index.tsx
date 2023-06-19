@@ -31,7 +31,7 @@ const BackgroundDots = ({
         width: "100%",
         height: "100%",
         position: "absolute",
-        zIndex: -1,
+        zIndex: -999,
         top: 0,
         left: 0,
         ...style,

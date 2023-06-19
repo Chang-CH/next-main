@@ -13,6 +13,7 @@
   "dependencies": {
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@module-federation/nextjs-mf": "^6.5.1",
     "@next/mdx": "^13.4.1",
     "@types/lodash": "^4.14.194",
     "@types/node": "20.1.1",

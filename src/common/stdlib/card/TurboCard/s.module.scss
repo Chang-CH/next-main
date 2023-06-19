@@ -1,0 +1,75 @@
+@keyframes spinner {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+$component-radius: 10px;
+
+.container {
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 0;
+  border-radius: $component-radius;
+}
+
+.divContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+
+  border: solid 1px #fff2;
+  border-radius: inherit;
+  background-clip: padding-box;
+  // background-color: #000;
+  background-image: radial-gradient(circle at 50% 20px, #290712, #000);
+  padding: 10px;
+}
+
+.edgeSpinner {
+  content: "";
+  position: absolute;
+
+  top: 1px;
+  bottom: 1px;
+  left: 1px;
+  right: 1px;
+  z-index: -498;
+  border-radius: inherit;
+  opacity: 0;
+
+  &:before {
+    content: "";
+    background: conic-gradient(#f5165d 0deg, #3086e9 125deg, #000 270deg);
+    position: inherit;
+    z-index: -499;
+
+    // center the spinner
+    left: 50%;
+    top: 50%;
+
+    // if height > width, aspect ratio will make the width match the height.
+    height: 200%;
+    aspect-ratio: 1;
+    // if width >= height, height of bottom padding is 200% of width, total height is 200% width.
+    padding-bottom: 200%; // padding % is determined by width
+
+    animation: 5s linear infinite spinner;
+  }
+}
+
+.container:hover {
+  // without > :first-child cascades to all children of container as well, i.e. the content in divContent
+  > :first-child {
+    opacity: 1;
+    transition: opacity 1s ease;
+  }
+}

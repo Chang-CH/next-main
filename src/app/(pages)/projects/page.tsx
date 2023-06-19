@@ -1,6 +1,6 @@
 import ProjectCard from "./components/Card";
-import draw2p from "./draw2p.png";
-import hireside from "./hireside.png";
+import draw2p from "./assets/draw2p.png";
+import hireside from "./assets/hireside.png";
 
 const Projects = () => {
   return (

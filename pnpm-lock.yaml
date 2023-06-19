@@ -7,6 +7,9 @@ dependencies:
   '@mdx-js/react':
     specifier: ^2.3.0
     version: 2.3.0(react@18.2.0)
+  '@module-federation/nextjs-mf':
+    specifier: ^6.5.1
+    version: 6.5.1(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1)
   '@next/mdx':
     specifier: ^13.4.1
     version: 13.4.1(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0)
@@ -286,6 +289,97 @@ packages:
       '@types/mdx': 2.0.5
       '@types/react': 18.2.6
       react: 18.2.0
+    dev: false
+
+  /@module-federation/nextjs-mf@6.5.1(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1):
+    resolution: {integrity: sha512-uCf79fPgGzkgo1GdUfuJd9WwJcEHn0WT5BTeJXRTL6kiHaiudZQRNTSJIcvOq1oRuXZG6A18hvlk6rx3vicnlw==}
+    peerDependencies:
+      next: ^12 || ^13
+      react: ^17 || ^18
+      react-dom: ^17 || ^18
+      styled-jsx: '*'
+      webpack: ^5.40.0
+    peerDependenciesMeta:
+      styled-jsx:
+        optional: true
+    dependencies:
+      '@module-federation/node': 0.12.2(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1)
+      '@module-federation/utilities': 1.8.0(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1)
+      encoding: 0.1.13
+      eventemitter3: 5.0.1
+      fast-glob: 3.2.12
+      next: 13.4.1(react-dom@18.2.0)(react@18.2.0)(sass@1.62.1)
+      node-fetch: 2.6.11(encoding@0.1.13)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      webpack: 5.82.1
+      webpack-sources: 3.2.3
+    dev: false
+
+  /@module-federation/node@0.12.2(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1):
+    resolution: {integrity: sha512-eh2hq5cx92S7S1Y9Vp/OVpbzEmWhiBIcSWaUf9kUqyjNpH5pzMgh9cX6Etp2hn63OFv2SaYvZ84h0rqrf/C7VA==}
+    peerDependencies:
+      next: ^12||^13
+      react: ^16||^17||^18
+      react-dom: ^16||^17||^18
+      webpack: ^5.40.0
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      '@module-federation/utilities': 1.4.0(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1)
+      encoding: 0.1.13
+      next: 13.4.1(react-dom@18.2.0)(react@18.2.0)(sass@1.62.1)
+      node-fetch: 2.6.7(encoding@0.1.13)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      webpack: 5.82.1
+    dev: false
+
+  /@module-federation/utilities@1.4.0(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1):
+    resolution: {integrity: sha512-J4KISJvLmFhZEgBhdntn6MWqElWU6vMC/JuQT7MdNe8Apc8qoYis0FKGp4gp8YkIPPhplkQExy2vS14+3KxoJA==}
+    peerDependencies:
+      next: ^12 || ^13
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+      webpack: ^5.40.0
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      next: 13.4.1(react-dom@18.2.0)(react@18.2.0)(sass@1.62.1)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      webpack: 5.82.1
+    dev: false
+
+  /@module-federation/utilities@1.8.0(next@13.4.1)(react-dom@18.2.0)(react@18.2.0)(webpack@5.82.1):
+    resolution: {integrity: sha512-qKbZF+SU7jfAt+q1kRUNxU1jzHErRyIP77DA+yCYCJaagWaFuz0Hmud8Yr6n/mQ1WJgQeh+gmNA0ad75koKopQ==}
+    peerDependencies:
+      next: ^12 || ^13
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+      webpack: ^5.40.0
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      next: 13.4.1(react-dom@18.2.0)(react@18.2.0)(sass@1.62.1)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      webpack: 5.82.1
     dev: false
 
   /@next/env@13.4.1:
@@ -1609,6 +1703,12 @@ packages:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
     dev: true
 
+  /encoding@0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    dependencies:
+      iconv-lite: 0.6.3
+    dev: false
+
   /enhanced-resolve@5.14.0:
     resolution: {integrity: sha512-+DCows0XNwLDcUhbFJPdlQEVnT2zXlCv7hPxemTz86/O+B/hCQ+mb7ydkPKiflpVraqLPCAfu7lDy+hBXueojw==}
     engines: {node: '>=10.13.0'}
@@ -2130,6 +2230,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+    dev: false
+
   /events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -2513,6 +2617,13 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
     dev: true
+
+  /iconv-lite@0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      safer-buffer: 2.1.2
+    dev: false
 
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
@@ -3570,6 +3681,32 @@ packages:
       - babel-plugin-macros
     dev: false
 
+  /node-fetch@2.6.11(encoding@0.1.13):
+    resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      encoding: 0.1.13
+      whatwg-url: 5.0.0
+    dev: false
+
+  /node-fetch@2.6.7(encoding@0.1.13):
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      encoding: 0.1.13
+      whatwg-url: 5.0.0
+    dev: false
+
   /node-releases@2.0.10:
     resolution: {integrity: sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==}
     dev: false
@@ -4447,6 +4584,10 @@ packages:
       is-regex: 1.1.4
     dev: true
 
+  /safer-buffer@2.1.2:
+    resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+    dev: false
+
   /sass@1.62.1:
     resolution: {integrity: sha512-NHpxIzN29MXvWiuswfc1W3I0N8SXBd8UR26WntmDlRYf0bSADnwnOjsyMZ3lMezSlArD33Vs3YFhp7dWvL770A==}
     engines: {node: '>=14.0.0'}
@@ -4909,6 +5050,10 @@ packages:
       vfile: 5.3.7
     dev: true
 
+  /tr46@0.0.3:
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+    dev: false
+
   /trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
     dev: false
@@ -5178,6 +5323,10 @@ packages:
       graceful-fs: 4.2.11
     dev: false
 
+  /webidl-conversions@3.0.1:
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+    dev: false
+
   /webpack-sources@3.2.3:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}
     engines: {node: '>=10.13.0'}
@@ -5221,6 +5370,13 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
+    dev: false
+
+  /whatwg-url@5.0.0:
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
     dev: false
 
   /which-boxed-primitive@1.0.2:
