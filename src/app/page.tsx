@@ -9,7 +9,7 @@ import Link from "next/link";
  * Styles
  */
 import styles from "./s.module.css";
-import Timeline from "@/common/stdlib/timeline";
+import Timeline from "@/common/stdlib/timeline/SimpleTimeline";
 import TurboCard from "@/common/stdlib/card/TurboCard";
 
 const Home = () => {

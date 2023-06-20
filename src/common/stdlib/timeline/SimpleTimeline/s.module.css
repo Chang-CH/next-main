@@ -1,0 +1,31 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+}
+
+.cardBody {
+    background-color: #222;
+    padding: 1rem;
+    margin: 1rem;
+    box-shadow: 5px 5px #000 ;
+    width: 100%;
+}
+
+.image {
+    display: flex;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: contain;
+    background-color: white;
+    flex-shrink: 0;
+    width: 200px;
+    height: 200px;
+}
+
+.connector {
+    height: 10rem;
+    margin-left: 100px;
+    border-left: solid 1px white;
+}

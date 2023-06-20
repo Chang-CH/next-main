@@ -8,6 +8,7 @@
 }
 
 $component-radius: 10px;
+$border-width: 2px;
 
 .container {
   position: relative;
@@ -26,7 +27,7 @@ $component-radius: 10px;
   align-items: center;
   justify-content: center;
 
-  border: solid 1px #fff2;
+  border: solid $border-width #fff2;
   border-radius: inherit;
   background-clip: padding-box;
   // background-color: #000;
@@ -38,10 +39,10 @@ $component-radius: 10px;
   content: "";
   position: absolute;
 
-  top: 1px;
-  bottom: 1px;
-  left: 1px;
-  right: 1px;
+  top: $border-width;
+  bottom: $border-width;
+  left: $border-width;
+  right: $border-width;
   z-index: -498;
   border-radius: inherit;
   opacity: 0;
