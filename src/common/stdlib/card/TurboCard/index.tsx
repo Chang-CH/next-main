@@ -6,13 +6,11 @@ import styles from "./s.module.scss";
 const TurboCard = ({
   children,
   className,
-  link,
   style,
   ...rest
 }: {
   children: React.ReactNode;
   className?: string;
-  link?: string;
   style?: {
     [key: string]: any;
   };
@@ -21,18 +19,16 @@ const TurboCard = ({
   };
 }) => {
   return (
-    <a href={link}>
-      <div
-        className={
-          className ? `${styles.container} ${className}` : styles.container
-        }
-        style={style}
-        {...rest}
-      >
-        <div className={styles.edgeSpinner} />
-        <div className={styles.divContent}>{children}</div>
-      </div>
-    </a>
+    <div
+      className={
+        className ? `${styles.container} ${className}` : styles.container
+      }
+      style={style}
+      {...rest}
+    >
+      <div className={styles.edgeSpinner} />
+      <div className={styles.divContent}>{children}</div>
+    </div>
   );
 };
 

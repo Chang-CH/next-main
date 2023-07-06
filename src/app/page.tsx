@@ -124,36 +124,33 @@ const Home = () => {
         <div className={styles.divExperience}>
           <h2 className={styles.h2}>Projects</h2>
           <div className={styles.divProjects}>
-            <TurboCard
-              className={styles.cardProject}
-              link="https://www.npmjs.com/package/@chang-ch/mfe-proxy"
-            >
-              <h3 className={styles.titleProject}>
-                <strong>mfe-proxy</strong>
-              </h3>
-              <p>proxy to local or remote micro front ends on the go</p>
-            </TurboCard>
-            <TurboCard
-              className={styles.cardProject}
-              link="https://github.com/Chang-CH/draw2p"
-            >
-              <h3 className={styles.titleProject}>
-                <strong>draw2p</strong>
-              </h3>
-              <p>drawing collaboration app using p2p WebRTC</p>
-            </TurboCard>
-            <TurboCard
-              className={styles.cardProject}
-              link="https://www.hireside.co/"
-            >
-              <h3 className={styles.titleProject}>
-                <strong>Hireside</strong>
-              </h3>
-              <p>
-                Instant price estimates for renovation works from web scraped
-                data
-              </p>
-            </TurboCard>
+            <a href="https://www.npmjs.com/package/@chang-ch/mfe-proxy">
+              <TurboCard className={styles.cardProject}>
+                <h3 className={styles.titleProject}>
+                  <strong>mfe-proxy</strong>
+                </h3>
+                <p>proxy to local or remote micro front ends on the go</p>
+              </TurboCard>
+            </a>
+            <a href="https://github.com/Chang-CH/draw2p">
+              <TurboCard className={styles.cardProject}>
+                <h3 className={styles.titleProject}>
+                  <strong>draw2p</strong>
+                </h3>
+                <p>drawing collaboration app using p2p WebRTC</p>
+              </TurboCard>
+            </a>
+            <a href="https://www.hireside.co/">
+              <TurboCard className={styles.cardProject}>
+                <h3 className={styles.titleProject}>
+                  <strong>Hireside</strong>
+                </h3>
+                <p>
+                  Instant price estimates for renovation works from web scraped
+                  data
+                </p>
+              </TurboCard>
+            </a>
             <Link href="/projects">
               <TurboCard className={styles.cardProject}>
                 <h3 className={styles.titleProject}>

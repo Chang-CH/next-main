@@ -69,7 +69,7 @@
     display: flex;
     flex-direction: column;
     max-width: 1000px;
-    width: 100%;
+    width: 80%;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -89,9 +89,10 @@
 }
 
 .cardProject {
-    width: 100%;
+    width: 250px;
     justify-content: center;
     text-align: center;
+    height: 100%;
 }
 
 .titleProject {
