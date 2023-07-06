@@ -12,6 +12,7 @@ import BlobBg from "@/common/backgrounds/BlobBg";
 import MidiPlayer from "@/common/gizmos/MidiPlayer";
 import Timeline from "@/common/stdlib/timeline/SimpleTimeline";
 import TurboCard from "@/common/stdlib/card/TurboCard";
+import Link from "next/link";
 
 const Home = () => {
   return (
@@ -123,19 +124,28 @@ const Home = () => {
         <div className={styles.divExperience}>
           <h2 className={styles.h2}>Projects</h2>
           <div className={styles.divProjects}>
-            <TurboCard className={styles.cardProject}>
+            <TurboCard
+              className={styles.cardProject}
+              link="https://www.npmjs.com/package/@chang-ch/mfe-proxy"
+            >
               <h3 className={styles.titleProject}>
                 <strong>mfe-proxy</strong>
               </h3>
               <p>proxy to local or remote micro front ends on the go</p>
             </TurboCard>
-            <TurboCard className={styles.cardProject}>
+            <TurboCard
+              className={styles.cardProject}
+              link="https://github.com/Chang-CH/draw2p"
+            >
               <h3 className={styles.titleProject}>
                 <strong>draw2p</strong>
               </h3>
               <p>drawing collaboration app using p2p WebRTC</p>
             </TurboCard>
-            <TurboCard className={styles.cardProject}>
+            <TurboCard
+              className={styles.cardProject}
+              link="https://www.hireside.co/"
+            >
               <h3 className={styles.titleProject}>
                 <strong>Hireside</strong>
               </h3>
@@ -144,12 +154,14 @@ const Home = () => {
                 data
               </p>
             </TurboCard>
-            <TurboCard className={styles.cardProject}>
-              <h3 className={styles.titleProject}>
-                <strong>Others</strong>
-              </h3>
-              <p>Gizmos, websites, and other random stuff</p>
-            </TurboCard>
+            <Link href="/projects">
+              <TurboCard className={styles.cardProject}>
+                <h3 className={styles.titleProject}>
+                  <strong>Others</strong>
+                </h3>
+                <p>Gizmos, websites, and other random stuff</p>
+              </TurboCard>
+            </Link>
           </div>
         </div>
         <div style={{ height: "30vh" }} />

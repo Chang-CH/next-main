@@ -29,3 +29,23 @@
     margin-left: 100px;
     border-left: solid 1px white;
 }
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.tagDiv {
+    display: flex;
+    flex-direction: row;
+    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.tag {
+    background-color: #222;
+    border-radius: 9999px;
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+}

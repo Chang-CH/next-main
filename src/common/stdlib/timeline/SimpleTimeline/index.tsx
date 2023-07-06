@@ -10,7 +10,7 @@ export interface TimelineData {
 }
 const Timeline = ({ data }: { data: TimelineData[] }) => {
   return (
-    <div className="w-full">
+    <div style={{ width: "100%" }}>
       {data.map((entry, index) => {
         return (
           <>
@@ -25,19 +25,16 @@ const Timeline = ({ data }: { data: TimelineData[] }) => {
                 />
               ) : null}
               <div className={styles.cardBody}>
-                <h2 className="text-2xl font-bold">{entry.title}</h2>
+                <h2 className={styles.title}>{entry.title}</h2>
                 <p>{entry.timeline}</p>
-                <div className="flex flex-row mr-auto justify-center items-center">
+                <div className={styles.tagDiv}>
                   {entry.tags.map((name: string, index: number) => (
-                    <p
-                      key={index}
-                      className="bg-gray-700 rounded-full mr-1 px-3"
-                    >
+                    <p key={index} className={styles.tag}>
                       {name}
                     </p>
                   ))}
                 </div>
-                <div className="w-full">{entry.description}</div>
+                <div style={{ width: "100%" }}>{entry.description}</div>
               </div>
             </div>
             {index < data.length - 1 ? (
