@@ -21,7 +21,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${montserrat.variable} font-sans flex flex-col min-h-screen min-w-full relative`}
+        className={`${montserrat.variable}`}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          minWidth: "100vw",
+          position: "relative",
+          fontFamily: "var(--font-montserrat)",
+        }}
       >
         {children}
       </body>

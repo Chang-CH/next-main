@@ -10,7 +10,7 @@ type PageProps = {
   };
 };
 
-const BackgroundDots = ({
+const DotsBg = ({
   dotColour,
   bgColour,
   dotRadius,
@@ -40,4 +40,4 @@ const BackgroundDots = ({
   );
 };
 
-export default BackgroundDots;
+export default DotsBg;

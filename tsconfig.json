@@ -27,6 +27,7 @@
       }
     ],
     "paths": {
+      "*": ["./@mf-types/*"], // module federation
       "@/*": [
         "./src/*"
       ],

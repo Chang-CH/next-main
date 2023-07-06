@@ -1,4 +1,4 @@
-import { convertData } from "./utils";
+import { convertData, convertPath, convertPoints } from "./utils";
 
 export interface TimelineData {
   title: string;
@@ -7,6 +7,8 @@ export interface TimelineData {
   preview: string;
   timeline: string;
 }
+
+// eslint-disable-next-line unused-imports/no-unused-vars
 const GitTimeline = ({ data }: { data: TimelineData[] }) => {
   const tempData = [
     {
@@ -46,27 +48,56 @@ const GitTimeline = ({ data }: { data: TimelineData[] }) => {
 
   // TODO: set this as prop
   const width = 100;
-  const height = 35;
-  const paths = convertData(width, height, tempData, 3, 14, true);
+  const height = 3 * 10;
+  const values = convertData(width, height, tempData, 3, 14, true);
+
+  const paths = tempData.map((item, arrIdx) => {
+    if (arrIdx === 0)
+      return `M ${values.startX} ${values.startY} L ${values.endX} ${values.endY}`;
+
+    const data: ["branch" | "merge", number][] = [
+      ["branch", item.start - 1],
+      ["merge", item.end],
+    ];
+
+    return convertPath(
+      values,
+      convertPoints(values, item.offset, data, true),
+      true
+    );
+  });
 
   return (
-    <div className="w-full h-1/2" style={{ height: "400px" }}>
-      <button
+    <div
+      className="w-full h-1/2"
+      style={{ height: "300px", width: "1000px", position: "relative" }}
+    >
+      <div
         style={{
-          position: "absolute",
-          top: "40%",
-          left: "45%",
-          backgroundColor: "black",
-          borderRadius: "10px",
+          paddingTop: `${(height / width) * 100}%`,
+          backgroundColor: "#ff000033",
+          position: "relative",
         }}
       >
-        sample text
-      </button>
+        {tempData.map((data, idx) => (
+          <button
+            style={{
+              position: "absolute",
+              top: `${100 - ((data.offset + 1) * 100) / 4}%`,
+              left: `${((data.start + data.end - 2) * 50) / 15}%`,
+              transform: "translate(-10%, -25%)",
+            }}
+            key={idx}
+          >
+            {data.role}
+          </button>
+        ))}
+      </div>
       <svg
         height="100%"
         width="100%"
         viewBox={`0 0 ${width} ${height}`}
-        style={{ zIndex: -1 }}
+        style={{ zIndex: -1, position: "absolute" }}
       >
         {paths
           .map((path1, idx) => (

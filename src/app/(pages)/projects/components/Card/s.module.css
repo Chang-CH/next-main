@@ -6,3 +6,44 @@
     margin: 1rem;
     box-shadow: 5px 5px #000;
 }
+
+.preview {
+    object-fit: cover;
+    height: 300px;
+}
+
+.divContent {
+    width: 100%;
+    margin-top: 1.25rem;
+}
+
+.title {
+    font-size: 1.875rem/* 30px */;
+    line-height: 2.25rem/* 36px */;
+    font-weight: 700;
+}
+
+.divTech {
+    display: flex;
+    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.description {
+    width: 100%;
+}
+
+.tag {
+    background-color: #222;
+    border-radius: 9999px;
+    margin-right: 0.25rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.divLinks {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    margin-top: auto;
+}

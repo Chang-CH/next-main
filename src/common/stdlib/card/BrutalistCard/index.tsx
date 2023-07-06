@@ -1,6 +1,6 @@
 import styles from "./s.module.css";
 
-const BrutalistButton = ({
+const BrutalistCard = ({
   children,
   className,
   ...rest
@@ -12,15 +12,15 @@ const BrutalistButton = ({
   };
 }) => {
   return (
-    <button
+    <div
       className={
-        className ? `${styles.normalButton} ${className}` : styles.normalButton
+        className ? `${styles.container} ${className}` : styles.container
       }
       {...rest}
     >
       {children}
-    </button>
+    </div>
   );
 };
 
-export default BrutalistButton;
+export default BrutalistCard;

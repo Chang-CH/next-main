@@ -8,3 +8,94 @@
     border-bottom: 2px solid orange;
     margin-bottom: 0;
 }
+
+.rootContainer {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex-grow: 1;
+    min-width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.bodyContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.divLinks {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 50%;
+}
+
+.splashContainer {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+}
+
+.splashText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    min-width: 400px;
+    font-family: var(--font-montserrat);
+}
+
+.divGizmo {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    justify-content: center;
+}
+
+.divExperience {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.h2 {
+    font-size: 1.5rem/* 24px */;
+    line-height: 2rem/* 32px */;
+}
+
+.divProjects {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 300px;
+}
+
+.cardProject {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+
+.titleProject {
+    font-size: 1.25rem/* 20px */;
+    line-height: 1.75rem/* 28px */;
+}

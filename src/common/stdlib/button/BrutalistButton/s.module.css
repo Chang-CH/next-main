@@ -7,3 +7,7 @@
     background-color: #333;
     box-shadow: 3px 3px #000;
 }
+
+.normalButton:hover {
+    background-color: #666;
+}

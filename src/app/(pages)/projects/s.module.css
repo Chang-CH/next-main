@@ -1,0 +1,16 @@
+/* flex flex-col justify-center items-center */
+.root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.titleDiv {
+    margin: 2.5rem;
+}
+
+.title {
+    font-size: 1.875rem/* 30px */;
+    line-height: 2.25rem/* 36px */;
+}

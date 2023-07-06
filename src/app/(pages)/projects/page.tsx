@@ -1,10 +1,23 @@
 import ProjectCard from "./components/Card";
 import draw2p from "./assets/draw2p.png";
+import mfe from "./assets/mfe.png";
 import hireside from "./assets/hireside.png";
+import styles from "./s.module.css";
 
 const Projects = () => {
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className={styles.root}>
+      <div className={styles.titleDiv}>
+        <h1 className={styles.title}>Projects</h1>
+      </div>
+      <ProjectCard
+        preview={mfe}
+        title="mfe-proxy"
+        description="Avoid hardcoding port numbers for remote webpack micro front ends in development."
+        tech={["NodeJs", "Websocket", "Webpack", "Module Federation"]}
+        link="https://www.npmjs.com/package/@chang-ch/mfe-proxy"
+        source="https://github.com/Chang-CH/mfe-proxy"
+      />
       <ProjectCard
         preview={draw2p}
         title="Draw2P"

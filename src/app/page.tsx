@@ -1,47 +1,56 @@
-/**
- * Components
- */
-import BlobBg from "@/common/backgrounds/BlobBg";
-import MidiPlayer from "@/common/gizmos/MidiPlayer";
-import Link from "next/link";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 /**
  * Styles
  */
 import styles from "./s.module.css";
+
+/**
+ * Components
+ */
+import BlobBg from "@/common/backgrounds/BlobBg";
+import MidiPlayer from "@/common/gizmos/MidiPlayer";
 import Timeline from "@/common/stdlib/timeline/SimpleTimeline";
 import TurboCard from "@/common/stdlib/card/TurboCard";
 
 const Home = () => {
   return (
-    <div className="relative flex grow min-w-full items-center justify-center">
-      <div className="flex flex-col max-w-[1200px] w-full items-center justify-center min-h-screen">
-        <div className="flex flex-row justify-evenly w-1/2">
+    <div className={styles.rootContainer}>
+      <div className={styles.bodyContainer}>
+        {/* <div className={styles.divLinks}>
           <Link href="/projects" className={styles.textLink}>
             Projects
           </Link>
-          <Link href="/about" className={styles.textLink}>
-            About
+          <Link href="/random" className={styles.textLink}>
+            Random
           </Link>
-          <Link href="/dev" className={styles.textLink}>
-            Dev
-          </Link>
-        </div>
-        <div className="flex flex-row grow items-center justify-center w-full h-full min-h-[500px]">
-          <div className="flex flex-col items-center justify-center font-montserrat w-1/2 min-w-[400px]">
+        </div> */}
+        <div className={styles.splashContainer}>
+          <div className={styles.splashText}>
             <div>
               <h1 className="text-8xl">Hello :)</h1>
-              <p className="text-2xl">My name is Chuan Hao</p>
+              <p className={styles.h2}>My name is Chuan Hao</p>
               <p>I write JavaScript not tragedies</p>
+              <div className="flex flex-row">
+                <a
+                  href="https://www.linkedin.com/in/chuan-hao-c-57b096208/"
+                  className="mr-3"
+                >
+                  <FaLinkedin size={28} />
+                </a>
+                <a href="https://github.com/Chang-CH">
+                  <FaGithub size={28} />
+                </a>
+              </div>
             </div>
           </div>
-          <div className="relative flex grow h-full justify-center">
+          <div className={styles.divGizmo}>
             <MidiPlayer />
           </div>
         </div>
       </div>
-      <div className="flex flex-col max-w-[1200px] w-full items-center justify-center min-h-screen">
-        <h2 className="text-2xl">Experience</h2>
+      <div className={styles.divExperience}>
+        <h2 className={styles.h2}>Experience</h2>
         <Timeline
           data={[
             {
@@ -69,7 +78,7 @@ const Home = () => {
                   • Worked on Shopee&apos;s Promotion Front End team on the
                   internal promotion admin portal
                   <br />• Developed batch upload feature for campaign managers
-                  to create promotion media in bulk <br /> • Built a JavaScript
+                  to bulk create promotion media <br /> • Built a JavaScript
                   Rollup bundle size analyzer for Gitlab CI/CD pipeline using
                   DangerJS
                 </p>
@@ -111,43 +120,39 @@ const Home = () => {
             },
           ]}
         />
-        <div className="flex max-w-[1200px] w-full items-center justify-center min-h-screen">
-          <h2 className="text-2xl">(Some) Projects</h2>
-          <div className="h-full flex-row justify-evenly space-x-1 min-h-[300px]">
-            <TurboCard className="w-full justify-center text-center">
-              <h3 className="text-xl">
+        <div className={styles.divExperience}>
+          <h2 className={styles.h2}>Projects</h2>
+          <div className={styles.divProjects}>
+            <TurboCard className={styles.cardProject}>
+              <h3 className={styles.titleProject}>
                 <strong>mfe-proxy</strong>
               </h3>
-              <p className="text-s">
-                proxy to local or remote micro front ends on the go
-              </p>
+              <p>proxy to local or remote micro front ends on the go</p>
             </TurboCard>
-            <TurboCard className="w-full justify-center text-center">
-              <h3 className="text-xl">
+            <TurboCard className={styles.cardProject}>
+              <h3 className={styles.titleProject}>
                 <strong>draw2p</strong>
               </h3>
-              <p className="text-s">
-                drawing collaboration app using p2p WebRTC
-              </p>
+              <p>drawing collaboration app using p2p WebRTC</p>
             </TurboCard>
-            <TurboCard className="w-full justify-center text-center">
-              <h3 className="text-xl">
+            <TurboCard className={styles.cardProject}>
+              <h3 className={styles.titleProject}>
                 <strong>Hireside</strong>
               </h3>
-              <p className="text-s">
+              <p>
                 Instant price estimates for renovation works from web scraped
                 data
               </p>
             </TurboCard>
-            <TurboCard className="w-full justify-center text-center">
-              <h3 className="text-xl">
+            <TurboCard className={styles.cardProject}>
+              <h3 className={styles.titleProject}>
                 <strong>Others</strong>
               </h3>
-              <p className="text-s">Gizmos, websites, and other random stuff</p>
+              <p>Gizmos, websites, and other random stuff</p>
             </TurboCard>
           </div>
         </div>
-        <div className="h-[50vh]" />
+        <div style={{ height: "30vh" }} />
       </div>
       <BlobBg />
     </div>

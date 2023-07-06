@@ -18,22 +18,22 @@ const ProjectCard = (props: ProjectCardProps) => {
     <div className={styles.card}>
       {props.preview ? (
         <Image
-          className="object-cover h-[300px]"
+          className={styles.preview}
           src={props.preview}
           alt={props.title}
         />
       ) : null}
-      <div className="w-full mt-5">
-        <h2 className="text-2xl font-bold">{props.title}</h2>
-        <div className="flex flex-row mr-auto justify-center items-center">
+      <div className={styles.divContent}>
+        <h2 className={styles.title}>{props.title}</h2>
+        <div className={styles.divtech}>
           {props.tech.map((name: string, index: number) => (
-            <p key={index} className="bg-gray-700 rounded-full mr-1 px-3">
+            <p key={index} className={styles.tag}>
               {name}
             </p>
           ))}
         </div>
-        <p className="w-full">{props.description}</p>
-        <div className="flex flex-row ml-auto mt-auto">
+        <p className={styles.description}>{props.description}</p>
+        <div className={styles.divLinks}>
           {props.link ? (
             <Link href={props.link}>
               <Button>

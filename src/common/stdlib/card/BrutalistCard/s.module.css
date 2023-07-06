@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    align-items: center;
+    padding: 5px;
+    background-color: #222;
+    box-shadow: 3px 3px #000;
+}
+
+.container:hover {
+    background-color: #333;
+}
