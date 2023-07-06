@@ -7,15 +7,6 @@ Module federation currently does not work with app router, see https://github.co
 import { NextFederationPlugin } from "@module-federation/nextjs-mf";
 // import FederatedTypesPlugin from "@module-federation/typescript";
 
-// this enables you to use import() and the webpack parser
-// loading remotes on demand, not ideal for SSR
-// const remotes = isServer => {
-//   // const location = isServer ? 'ssr' : 'chunks';
-//   return {
-//     reactButton: `reactButton@http://localhost:8081/remoteEntry.js`,
-//   };
-// };
-
 const withMDX = Mdx({
   extension: /\.mdx?$/,
   options: {
@@ -43,7 +34,9 @@ const nextConfig = {
         new NextFederationPlugin({
           name: "host",
           remotes: {
-            reactButton: "reactButton@http://localhost:8081/remoteEntry.js",
+            reactButton:
+              "reactButton@https://chang-ch.github.io/mf-source/ReactButton/remoteEntry.js",
+            // `reactButton@http://localhost:8081/remoteEntry.js`,
           },
           filename: "static/chunks/remoteEntry.js",
         })
