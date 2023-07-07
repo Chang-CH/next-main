@@ -11,10 +11,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@mdx-js/loader": "^2.3.0",
-    "@mdx-js/react": "^2.3.0",
-    "@module-federation/nextjs-mf": "^6.5.1",
-    "@next/mdx": "^13.4.1",
+    "@module-federation/nextjs-mf": "^6.7.1",
     "@types/lodash": "^4.14.194",
     "@types/node": "20.1.1",
     "@types/react": "18.2.6",
@@ -33,7 +30,11 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
+    "@mdx-js/loader": "^2.3.0",
+    "@mdx-js/react": "^2.3.0",
     "@module-federation/typescript": "^2.3.0",
+    "@next/mdx": "^13.4.1",
+    "@types/mdx": "^2.0.5",
     "@types/prismjs": "^1.26.0",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",

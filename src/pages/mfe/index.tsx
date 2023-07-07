@@ -1,6 +1,6 @@
 // @ts-nocheck
 import dynamic from "next/dynamic";
-
+import Button from "./button";
 // const ReactRemoteComponent = dynamic(() => import('remote/Nav'), {
 //   ssr: false,
 // });
@@ -11,7 +11,7 @@ const ReactButton = dynamic(() => import("reactButton/ReactButton"), {
 });
 
 export default function Home() {
-  console.log(ReactButton);
+  console.log("button", ReactButton);
   return (
     <div>
       <h1>
@@ -19,7 +19,8 @@ export default function Home() {
       </h1>
       <p>be</p>
       {/* <ReactRemoteComponent></ReactRemoteComponent> */}
-      <ReactButton></ReactButton>
+      {/* <ReactButton></ReactButton> */}
+      <Button />
       <p>aft</p>
     </div>
   );

@@ -3,7 +3,6 @@ import Mdx from "@next/mdx";
 /*
 Module federation currently does not work with app router, see https://github.com/module-federation/universe/issues/799
 */
-
 import { NextFederationPlugin } from "@module-federation/nextjs-mf";
 // import FederatedTypesPlugin from "@module-federation/typescript";
 
@@ -25,6 +24,9 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   // Optionally, add any other Next.js config below
   reactStrictMode: true,
+  experimental: {
+    mdxRs: true,
+  },
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
