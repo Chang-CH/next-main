@@ -1,14 +1,16 @@
 // @ts-nocheck
 import dynamic from "next/dynamic";
-import Button from "./button";
-// const ReactRemoteComponent = dynamic(() => import('remote/Nav'), {
-//   ssr: false,
-// });
 
-// eslint-disable-next-line import/no-unresolved
-const ReactButton = dynamic(() => import("reactButton/ReactButton"), {
-  ssr: false,
-});
+const ReactButton = dynamic(
+  () =>
+    // eslint-disable-next-line import/no-unresolved
+    import("reactButton/ReactButton").then(
+      (r: { ReactButton: React.ReactNode }) => r.ReactButton
+    ),
+  {
+    ssr: false,
+  }
+);
 
 export default function Home() {
   console.log("button", ReactButton);
@@ -19,8 +21,7 @@ export default function Home() {
       </h1>
       <p>be</p>
       {/* <ReactRemoteComponent></ReactRemoteComponent> */}
-      {/* <ReactButton></ReactButton> */}
-      <Button />
+      <ReactButton />
       <p>aft</p>
     </div>
   );
