@@ -41,6 +41,9 @@ const nextConfig = {
             // `reactButton@http://localhost:8081/remoteEntry.js`,
           },
           filename: "static/chunks/remoteEntry.js",
+          extraOptions: {
+            debug: true,
+          },
         })
       );
     }
