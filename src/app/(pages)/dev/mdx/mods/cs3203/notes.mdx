@@ -1,0 +1,77 @@
+# CS3223
+
+## Abstract Syntax Tree
+
+Follows*(a,b) just means b does not need to be directly after a, can Follows(a,c) && Follows*(c,b).
+
+
+**Note**:
+- stmt = line no., entity = "name"
+- `read x;` modifies `x`, but does not uses `x`.
+- `print x;` uses `x`.
+- `a = b` uses `b` only, modifies `a` only
+- if block, if either then or else uses `a`, if statement uses `a`. Same for Modifies.
+
+
+1. Follows(a,b): given
+    1. same nesting level (by curly brace, a; \{ b \}, if (condition) condition not yet higher level)
+    2. in same statement list
+    3. statement b appears right after a
+2. Parent(a,b): b is nested in a
+  ```c
+  while (something) { //a
+    z = 10;
+    x = y + z; } //b. Parent(a,b) is true.
+  ```
+3. Uses(a,b): `Uses(10, "count") --> line 10: _ = count + x` or `Uses("f", "x") --> f() { x = 10 }` (or `f` calls another procedure that uses `x`)
+4. Modifies(a,b): like uses, but changes the value. same rules apply for procedures `Uses("f","x")`.
+  ```c
+  if (a) {} else { //line 10
+    x = 10; // Modifies(10, x) is true, even if if block no modify
+    read x; 
+  }
+  ```
+
+## Wk 2 SOLID
+
+1. Single Responsibility Principle: Every class/function should only have 1 reason to change (`Journal` add entries/set entries, not save)
+2. Open Closed Principle: Opened for extension (instead of `filter(color)` use `filter(Specs)`), closed for modification
+3. Liskov Substitution Principle: `Child::method` acts the way you would expect `Parent::method` to. (`Square::setWidth` also changes height, violates LSP since assert area will fail)
+4. Interface Segregation Principle: separate `IMachine` into `IPrinter` and `IFax`, else some printer might have to implement empty `fax()` methods.
+5. Dependency Inversion Principle: Abstractions dont depend on details, e.g. `class.width * class.height` vs `class.getArea()` or `getArea(Shape)`.
+
+### Dont repeat yourself
+Duplication in code signifies an opportunity for abstraction. **NOT** incidental duplication: code to connect to db just so happens to be similar to webserver.
+
+### Agile
+- sprints 2-4 weeks
+- daily standups (scrum): like a commit --> what was done, what is in the way, etc.
+- sprint goals go into sprint backlog (anyone can contribute)
+- team selects item from backlog to work on for the sprint
+- after sprint finish, sprint review: demo new features etc, presentation
+
+## Wk 4 Design patterns
+
+1. [creational] Factory pattern: code might be coupled to `Truck` constructor, have abstract factory, implement `TruckFactory::createVehicle()`.
+    - 2103: private constructor, public factory method `createVehicle` prevent coupling of constructor
+2. [Structural] Facade pattern: like an API class in front of subsystem, prevent coupling with individual subcomponent implementation
+3. [behavioral] Visitor: if Person class already well implemented, adding extra methods e.g. `exportCsv` might introduce bugs, violate SRP.
+    Therefore, have `Student::visit(Visitor v) => v.visitStudent()`. so can have `exportCsvVisitor`, `exportHtmlVisitor` etc.
+  
+## Advanced SPA 
+
+### Control flow graph
+
+- group statements together (assign, call, read print etc.)
+- if / while have individual nodes
+- ignore control flow of procedure called by call, 1 procedure 1 cfg
+
+### New relationships
+
+1. `Next(a,b)`: if `b` is the next line execute after `a` and `b` is in the same cfg node or 1 cfg node edge away from `a`.
+2. `Affects(a1, a2)`: `a1` modifies variable `v` which is used by `a2`.
+  - `a1`, `a2` are assigns, if not assigns return false.
+3. `Calls(a,b)`: procedure `a` directly calls procedure `b`.
+4. `... with p.procName = "procedure1"`: can do equality checks on entity attributes.
+5. pattern `ifs (v, _, _)`, `while (v, _)` `v` = control variable.
+6. select `<s, v>` can return tuples (space separated).

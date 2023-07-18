@@ -1,0 +1,211 @@
+# CS4225 22/23 S1
+
+## Lecture 2/3
+
+- bandwidth: maximum amount of data that can be transmitted per unit time
+- latency: how long it takes for 1 packet to go from src to dest (1 way) or to and fro (round trip)
+
+### Mapreduce
+
+- big data often need:
+  1. iterate over records
+  2. extract something useful (`map`) e.g. (`[ABA],[AAA],[BBA]`)
+  3. shuffle/ sort results (`shuffle` --> group) e.g. (`[AAAAAABBB]`), assign to reducer based on key, e.g. A --> reducer1
+  4. aggregate results (`reduce`) e.g. (`\{A: 6, B: 3\}`)
+  5. return output result
+- Splits: split data into multiple splits
+- Map task: a job, request to process 1 split; can call map function many times
+- mapper/reducer: process executing map/reduce task (1 machine can run multiple mappers/reducers)
+- Extra: partition step --> optimize network traffic, default: take modulo of hash to determine which reducer etc. to use
+- Extra: combiner step --> like a mini reducer at end of map e.g. `\{A:2, B:1\}, \{A:3\}, \{A:1, B:2\}`.
+  - user's responsibility to make sure combiner function is correct, i.e. run 0/1/n times no different
+  - sum(sum(1,1), 1) === sum(1,1,1) ok; mean(mean(1,1), 2) !== mean(1,1,2)
+- Secondary sort: to ensure reducers values are sorted, define composite key (N, k), N is natural key, k is variable we want to sort. configure partition to partition by N only
+
+### MapReduce pseudocode
+
+1. `Map(key, value)`: `key`, `value` provided by question. call `emit(reduce_key, reduce_value)` to write intermediate results
+2. `Combine(reduce_key, reduce_value[])`: same type as emit value. must `emit(reduce_key, reduce_value)`. Must be same input format as reducer
+3. `Reduce(reduce_key, reduce_value[])`: Final combiner: `emit(final_key, final_value)`.
+
+### distributed file systems
+
+Assumptions:
+
+- scale out not up
+- high component failures
+- modest no. huge files
+- files mostly write once, append after
+- large streaming read over random access
+- Files stored as chunks (64MB Google FS, 128MB Hadoop FS)
+  Design:
+- each chunk replicated across multiple servers for backup
+- single master to coordinate access, keep metadata
+  Responsibility:
+- Namenode: single master, hold directory structure, garbage collection, periodic communication w/ data nodes. **No data moved through name node** --> direct client to datanode
+
+**Common SQL operations in MapReduce**:
+
+1. projection/ selection: map take in tuple output new tuple
+2. avg(price) Group by id: Map over tuples emit `<id, price>`. Framework auto groups keys by value. Compute avg in reducer. Optimize w/ combiners
+3. inner join:
+   1. Broad cast join: join small table and big table, All mappers store a copy of small table. iterate over big table, join records with small table
+   2. Reduce-side Common join: no need dataset to fit in memory. different mapper diff table, key of mapper used as variable to join by
+
+### Performance guidelines for basic algo design
+
+- Linear scalability: scale horizontally, linear on data size + compute resources
+- Minimize hard disk/network IO: bulk send/recv, sequential disk access
+- Memory working set: large memory working set, higher porobability of failure
+
+### Similarity Search
+
+- Euclidean distance, Manhattan distance
+- Common distance/similarity matrix: s(a,b) = cos(theta) = (a _b)/(|a|_ |b|), does not consider scale of a/b
+- Jaccard similarity: |AnB|/|AuB|, e.g. A = \{1,2\}, B = \{2,3\}, Jaccard = 1/3
+- Jaccard distance: 1-jaccard similarity
+
+**Document processing**
+
+1. Shingling: convert documents into sets of short phrases (shingles). k-shingle, e.g. D = 'lots of words', k = 2 --> \{'lots of', 'of words'\}. Jaccard similarity w/ key == shingles
+2. Min hashing: convert sets into short signatures, preserving similarity. hash used to compare similarity, e.g. \{'lots of', 'of words'\} --> \{12, 69\} --> 12, each shingle hashed, take min
+   Map: read document, extract shingles. hash each shingle, take min to get minhash. emit signature, document id
+
+Reduce: receive all documents with a given minhash signature, generate all candidate pairs (pairs of documents with same signature).
+
+**K-Means**
+For each cluster store 1 mean, assign each point to nearest cluster, update mean if necessary.
+
+1. initialize: pick k random points
+2. assign each point to nearest cluster
+3. update cluster center to average of all points
+4. repeat 2-3 until center no change
+   use a combiner so instead of emitting each point emit for each cluster instead
+
+### NoSQL
+
+1. Key Value stores: dictionaries, e.g. dynamodb. Can be persistent/non, good for basic non complex queries/info
+2. Document stores: databse --> collections --> documents --> JSON like fields + values e.g. mongoDB
+3. Wide Column Stores: each row an entity, columns can be grouped as column family. never use column = never use space. e.g. cassandra/Hbase
+4. GraphDB: like ER diagram
+
+- Strong consistency: any reads immediately after an update must give same result on all observers: block read until data updated (lower availability)
+- Eventual consistency: given enough time eventually all reads return most updated value
+- SQL: ACID (strong-er), NoSQL: BASE (Basically available: r/w mostly available; Soft state: no guarantee of knowing state; Eventually consistent)
+- NoSQL good for: horizontal partitioning (parallel); Can duplicate tables (precomputed joins table) so only 1 collection queried, SQL need check multiple tables; highly available
+
+**Partitioning**:
+
+1. Table paritioning: each table 1 partition, table cannot split across multiple machines
+2. Horizonal partitioning (sharding): partition key(shard key) determine which partition each tuple should be stored
+   - Range partition: split partition by range of values (id 1-100 = partition 1, decided auto by balancer) Good for range based queries, can ignore partitions, but partitions can be imbalanced
+   - Hash partition: split partition by hash (hash(id) < 100 = partition 1). hash output like a cycle, all nodes belong to closest clockwise "marker". add/remove markers as needed.
+   - hash partition, simple replication: delete node, copy all tuples to next clockwise partition. Can assign multiple markers per partition(node) so delete 1 node will not move all to a single node, load balance better.
+   - partition pruning: based on query `WHERE`/`FROM`, only scan the required partitions, ignore other partitions
+
+MongoDB: root --> routers (mongos) --> shards; root send query to mongos, mongos check config server for shard metadata, sends root query to relevant shards, mongos merge and return result.
+
+### Spark
+
+- Hadoop Mapreduce: high network/ disk io due to intermediate data/shuffling. bad for iterative (interactive) workflows: many mapreduce jobs
+- Spark: stores intermediate data in memory. data spills to disk if memory insufficient
+- better performance, shorter code, more libraries
+- driver process: read user input, manage spark, distribute work to executors
+- executors: run code assigned, return results to driver
+- cluster manager: allocates resources when application requests it, can be spark standalone/YARN/Mesos/Kubernetes
+- local mode: makes all processes run on same machine
+
+## RDD: Resilient Distributed Datasets
+
+- fault tolerance w/ `lineage`'s, distributed over machines
+- lineage: instead of replication, if node goes down use graph DAG (see below) recompute data in new worker node
+- immutable, once created cannot change. each worker takes a number of partition keys, decided by spark
+- read from file executes on each machine (worker) in paralle, not driver
+- transformations: `map`/ `order`/ `groupBy`/ `filter`/ `join`/ `select` w/ lambda. (**lazy**, only executes after action is called on it). executes in parallel in each machine, collected back to driver
+- **actions**: request for result, trigger spark to compute transformations: `data.map(...).collect()`.
+- Spark maintains a directed acyclic graph to represent all RDD objects (map --> filter --> map), actions trigger transformations
+  - narrow dependencies: each partition of parent RDD used by at most 1 partition of child RDD (e.g. map, filter, contains)
+  - wide dependencies: each partition of parent RDD used by multiple child RDD's (reduceByKey, groupBy, orderBy)
+  - stages == groups of consecutive narrow dependencies([read --> map][orderBy --> map --> collect])
+    - within stage, same machine perform consecutive transformations
+    - across stages, data shuffled, exchanged across partitions, **writes intermediate results to disk like mapreduce**
+
+### Caching
+
+example: `messages = errors.map(...); messages.cache(); messages.filter(A).collect(); messages.filter(B).collect()`
+
+- `cache()` saves an RDD of each worker to memory. `persist(args)` saves to memory/disk/off-heap memory
+- avoids recomputation, but if not enough memory Least Recently Used RDD is evicted.
+
+### Dataframes
+
+- basically tables of data (pandas). higher level than RDD's, has SQL like transformations, spark compiles to RDD operations
+- transformation functions (groupBy sort etc.) usually take in column objects (e.g. `desc("column1")` --> `desc` returns column object)
+- datasets: type safe dataframes. python no type hence dataframes
+- datasets return same type datasets on collect (or dataframe for dataframes)
+
+### Machine learning
+
+- classification: given samples, categorize into classes (labels) given training data --> each label output probability/ 0 or 1
+- regression: given training data predict numeric labels --> e.g. predict number of days raining
+- Stages: 1. Preprocessing (raw data) 2. Training (training data + training output) 3. Testing (testing data + output prediction) 4. evaluation (compare output prediction to actual)
+- Data quality: missing data, either
+  1. remove row
+  2. use mean/median of other rows
+  3. use **regression** model to predict based on other columns
+  4. insert column to indicate if other column value was missing
+- Normalization
+  1. One hot encoding: convert numeric into binary columns, e.g. 3 = 011, each column use algos that handle binary feature (e.g. linear regression)
+  2. clipping (discard data outside certain range) , standard scalar (x - mean)/std_dev, log transform log(1 + x), max min normalization (x - min(x)) / (max(x) - min(x))
+- logistic regression, sigmoid neuron: sigmoid(x) = 1/(1 + e^-x). `y = sigmoid(w * x + b)`, `w` = weight, `b` = bias. Minimize cost function j w/ gradient descent
+- Decision tree: flowchart
+- Random forest: many decision trees, take average. higher accuracy.
+- False positive = test output positive, actualy negative
+
+### MLlib
+
+- Transformers: map dataframes to dataframes, e.g. tokenization, one hot encoding. Typically append result to original dataframe
+- Estimator: take in data, output fitted model (model then used for classification etc.) returns a trasnformer
+
+### PageRank
+
+- Ranking pages on web
+  1. links as votes: the more incoming links, the more important the page.
+  2. The more important the page p1 linking to page p2, the more significant the link. page p1 importance = 10, points to 5 out links, each out link gets 10/5 votes
+- Matrix formulation: matrix M (i,j) = 1/di (where di = # outgoing links from i). Rank vector r, sum of all elements = 1. `M . r = r`.
+- Initial r = [1/|r|, 1/|r|, ...]. Keep multiplying (aka power iteration) `r = M.r` until change is negligible. Simplified page rank rj = sum(ri/di) for all i outlink to j, ri = rank of i, d = num outlink i
+- Random walk: suppose surfer starts at random page, each unit time surfer follows out link to random page. vector `P(t)[i]` = probability surfer at page i at time t. As t --> inf, probability is stable, use as page rank.
+- Problems:
+  1. Dead ends: no out links
+  2. Spider traps: out links cycle in small group
+- solution: teleports with probability beta, usually (0.1 - 0.2), dead end always teleport. all pages equal probability
+  - page rank rj = sum(beta _ri / di + (1 - beta)_ 1/N), ri/di same as simplified, 1/N due to teleport
+- Topic specific page rank: change teleport behaviour to only teleport to topic specific (e.g. google search query) pages. `rj = sum(beta * ri / di + (1 - beta) * 1/|T|)` if in set T of topic specific pages, `rj = sum(beta * ri / di)` if not.
+
+### Graphs
+
+Pregel:
+
+- Supersteps: for each vertex V, invoke user defined function. can read messages sent to V from previous step, can send messages to vertices for the next superstep, can r/w edges (incl add/delete)
+- computation stops when all vertices inactive.
+- Vertices hash partitioned, assigned to workers. workers **maintain state of its portion of the graph in memory, compute in memory**. Messages sent directly to other vertices if same worker, else **buffered locally** and sent as a batch to other workers
+  Giraph:
+- uses Hadoop's map for computation, zookeeper to enforce barrier waits (synchronization)
+
+### Streams
+
+- Reservoir sampling: given a stream, maintain uniform random sample of fixed size (probability to replace random record in sample), query based on reservoir
+- Compute mean/variance: store num items, sum of items, compute mean(`sum / n`). store sum of squares, return variance(`(square_sum - sum ^ 2/n)/(n - 1)`)
+
+Storm:
+
+- Tuple: ordered list of named values
+- Topology: computation graph, each node hold processing logic, edge indicate communication b/w nodes. each topology = 1 storm job. job runs forever until killed.
+- Streams: unbounded sequence of tuples. transformed by nodes of the topology
+- Spouts: stream generators, e.g. inputs. can propagate same data tpo multiple consumers
+- Bolts: subscribes to streams, feeds to transformers, produce result streams
+- Each bolt/spout can be multiple tasks, each task allocate to 1 worker. many workers = 1 supervisor(physical machine). zookeeper coordinate b/w supervisors. nimbus control zookeepers
+- multiple executors execute bolts (tasks run in parallel). When bolt emits tuple, which task to go to depends:
+  1. shuffle grouping: randomly distributed across tasks in the bolt
+  2. Field grouping: distribute based on user specified field
+  3. All: every task take copy of tuple

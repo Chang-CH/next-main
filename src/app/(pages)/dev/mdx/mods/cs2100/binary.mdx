@@ -1,0 +1,142 @@
+# CS2100 AY21/22 S1 Binary
+
+## Representing numbers
+
+**Convert binary -> hex**: split binary into groups of 4 e.g. 0000|0010|1001|1111 -> 0x029F
+**Convert binary to decimal**: multiply by 2^index
+**Convert decimal to binary**: divide by 2, remainder set as MSB
+
+Weights: power of number, e.g. 2nd digit of base 10 number -> weight 10
+
+MSB of **signed** int has no weight.
+
+### Negative numbers
+
+**Positive number representation unchanged**
+
+1. **Sign/Magnitude**:
+
+   <table>
+     <tr>
+       <th>Value</th>
+       <th>Bits</th>
+       <th>Value</th>
+       <th>Bits</th>
+     </tr>
+     <tr>
+       <td>+1</td>
+       <td>0001</td>
+       <td>-1</td>
+       <td>1001</td>
+     </tr>
+     <tr>
+       <td>+0</td>
+       <td>0000</td>
+       <td>-127</td>
+       <td>1111</td>
+     </tr>
+     <tr>
+       <td>+127</td>
+       <td>0111</td>
+       <td>-0</td>
+       <td>1000</td>
+     </tr>
+   </table>
+
+   1. Negation: Flip sign bit
+   2. Subtract from +ve: xor, if not get carry
+
+2. **1s complement**:
+
+   <table>
+     <tr>
+       <th>Value</th>
+       <th>Bits</th>
+       <th>Value</th>
+       <th>Bits</th>
+     </tr>
+     <tr>
+       <td>+1</td>
+       <td>0001</td>
+       <td>-1</td>
+       <td>1110</td>
+     </tr>
+     <tr>
+       <td>+0</td>
+       <td>0000</td>
+       <td>-127</td>
+       <td>1000</td>
+     </tr>
+     <tr>
+       <td>+127</td>
+       <td>0111</td>
+       <td>-0</td>
+       <td>1111</td>
+     </tr>
+   </table>
+
+   1. Negation: -x = 2^n - x - 1 -> invert all bits
+   2. Subtract from +ve: bitwise xor, add 1 LSB if MSB has carry forward. e.g. 0100 - 0001 -> 0100 + 1110 -> [1]0010 -> 0010 + 0001 -> 0011
+
+3. **2s complement**:
+
+   <table>
+     <tr>
+       <th>Value</th>
+       <th>Bits</th>
+       <th>Value</th>
+       <th>Bits</th>
+     </tr>
+     <tr>
+       <td>+1</td>
+       <td>0001</td>
+       <td>-1</td>
+       <td>1111</td>
+     </tr>
+     <tr>
+       <td>+0</td>
+       <td>0000</td>
+       <td>-127</td>
+       <td>1000</td>
+     </tr>
+     <tr>
+       <td>+128</td>
+       <td>0111</td>
+       <td>-0</td>
+       <td>0000</td>
+     </tr>
+   </table>
+
+   1. Negation: -x = invert bits, then + 1 LSB (right most, incl fraction)
+   2. Subtract from +ve: bitwise xor, carry forward. e.g. 0100 - 0001 -> 0100 + 1111 -> [1]0011 -> 0011
+
+Detecting overflow: Only occurs when both inputs are same sign, if output different sign bit overflow occured.
+**Add s complement where necessary! -0111base2 -> (1000)1s or (1001)2s**
+
+## Representing floats
+
+1. Fixed point representation (limited range): [00000][000] -> 5 bits integer 3 bits float
+   - Works for 1s/2s etc too: 0011.11 -> (1100.00)1s -> (1100.01)2s
+2. Floating point representation, IEEE 754 **Floats/Doubles**:
+   **Format:**
+
+   1. Single precision
+      1. Format: [1][8][23] -> [sign][exponent][mantissa]
+      2. Bias: 127
+   2. Double precision
+      1. Format: [1][11][52] -> [sign][exponent][mantissa]
+      2. Bias: 1023
+
+   Converting to IEEE 754, e.g. 0.085:
+
+   1. Remove sign bit into MSB [0]
+   2. Find exponent, k, s.t. input / 2^k = 1.XXX -> 0.085 / 2^-4 = 1.36, k = -4
+   3. Add bias to exponent: 127 - 4 = 123 = 01111011 -> [0][01111011]
+   4. Copy fractional to mantissa: 1.36 -> 01.**01011...** -> [0][01111011][01011...]
+
+   Numbers are assumed to be representable by 1.XX \* 2^k.
+   Special numbers:
+   0: [0][0...0][0...0]
+   Infinity: [0][1...1][0...0]
+   NaN: [0][1...1][Any]
+   Denormalised (assumed no leading 0): [0][0...0][Any]

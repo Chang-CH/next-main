@@ -1,0 +1,15 @@
+.pre {
+  padding-inline: 1em;
+  padding-block: 0.5em;
+  margin-bottom: 0.5em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  width: 100%;
+  font-size: 0.8em;
+  border-radius: 5px;
+
+  & div {
+    display: flex;
+    flex-direction: row;
+  }
+}

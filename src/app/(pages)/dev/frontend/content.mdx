@@ -1,0 +1,91 @@
+# Front end interview
+
+## CSS
+
+### Box model
+
+CSS box model is a box that wraps around every HTML element. It consists of: margins, borders, padding, and the actual content.
+
+1. Content - The content of the box, where text and images appear
+2. Padding - Clears an area around the content. The padding is transparent
+3. Border - A border that goes around the padding and content
+4. Margin - Clears an area outside the border. The margin is transparent
+
+When setting the height and width of an element, you set the **CONTENT** dimensions.
+
+### Selectors
+
+Note that these selectors can be combined, e.g. `p.test#demo` will select `<p id="demo" class="test">`.
+
+1. element selector: `p {color: red;}`, general element
+2. id selector: `#demo {color: red;}`, selects elements with demo id
+3. class selector: `.demo {color: red;}`, selects elements with the demo class
+4. universal selector: `* {color: red;}`, selects all elements
+5. pseudo class selector: `p:first-child {color: red;}`, selects the first child of all p elements
+   1. `:active` - Selects the active link
+   2. `:hover` - Selects on mouse over
+   3. `:visited` - Selects all visited links
+   4. `:first-child` - Selects the first child element
+6. pseudo element selector: `p::first-line` selects the first line of all p elements
+   1. `a::after` - Insert something after the content of each `<p>` element.
+
+```css
+a::after {
+  content: "click me";
+}
+```
+
+```HTML
+<!-- Code -->
+<a>hello</a>
+```
+
+```HTML
+<!-- Output -->
+<a>hello ::after</a>
+<!-- equals <a> hello click me</a> -->
+```
+
+    2.  `::before` - Insert something before the content of each `<p>` element
+    3.  `::first-letter` - Selects the first letter of each `<p>` element
+    4.  `::first-line` - Selects the first line of each `<p>` element
+    5.  `::selection` - Selects the portion of an element that is selected by a user
+    6.  `::marker` - Selects form elements with placeholder text
+
+**Examples**
+
+1. `p i`, selects all `<i>` elements inside `<p>` elements
+2. `p i:first-child {color: red;}`, selects the first child of all `<i>` elements inside `<p>` elements
+
+### Specificity
+
+When 2 selectors apply to the same element, the one with higher specificity wins.
+
+```css
+#demo {
+  color: blue;
+}
+.test {
+  color: green;
+}
+p {
+  color: red;
+}
+```
+
+In this case, `<p id="demo" class="test" style="color: pink;">` will be pink, since specificity order =
+(**inline style** > **id** > **class, pseudo class, attribute selectors** > **tag, elements, pseudo elements**)
+
+### Layouts
+
+## JS
+
+- throughput: amount of data transmitted at any given time
+- bandwidth: maximum theoretical throughput
+- latency: how long it takes a packet to travel from 1 point to another
+
+```JS
+const a = () => {
+  return <div></div>
+}
+```

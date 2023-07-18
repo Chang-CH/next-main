@@ -1,0 +1,282 @@
+# LeetCode
+
+## terminologies
+
+- throughput: amount of data transmitted at any given time
+- bandwidth: maximum theoretical throughput
+- latency: how long it takes a packet to travel from 1 point to another
+
+## Cloud Servers
+
+### Types
+
+- Virtual Private Server (EC2): functions like your own server, but is actually a vm running on a big server. Fixed allocation of resources (RAM etc)
+- Shared host: shares resources too, banks on fact that most websites are small
+
+### Horizontal scaling
+
+- Vertical scaling = bigger server, horizontal = more servers
+- horizontal can use conventional servers, can have high availability with redundancy
+- avoid [session stickiness](#session-stickiness)
+
+### Deployment
+
+- Graceful shutdown: already received requests should still be processed. New one are rejected.
+- Blue green: LB currently point to 3 v1 servers. 3 other servers updated to v2, LB point to the 3 v2 when ready
+  - v1 servers still active, used as servers for v3. Already received requests still processed by them. also allow easy rollback
+- Rolling: server 1 update and restart, LB point to others. then server 2, so on.
+  - user might land on v1 or v2, must ensure backward compatibility.
+  - update rolled out gradually, so can monitor health of deployment and rollback.
+
+Tools: capistrano (remote server deploy automation), puppet.
+
+[example](https://github.com/avik-das/zero-downtime-deployments-demonstration): sinatra(graceful shutdown ruby server),
+[caddy2](https://caddyserver.com/)(https reverse proxy with load balancer, support active health check at different end point without paid upgrade unlike nginx)
+
+## Load balancers
+
+note that some load balancers can cache requests themselves.
+
+### Types
+
+- Software: Elastic Load Balancer, HAProxy
+- Hardware: very expensive, sold in pairs.
+
+### Balancing traffic
+
+- Level 4 load balancer: distribute traffic based on info at level 4 (Network, TCP/UDP/FTP). usually simple, e.g. round robin
+- Level 7 load balancer: distribute traffic based on info at level 7 (Application, HTTP). can do advanced, e.g. by cookies, by headers, etc.
+  - can add additional functionality: session persistence (same user same server), ssl termination (forward data as unecrypted)
+- DNS load balancing: in case entire architecture die (building fire), have multiple availability zones (AZ), balance by health then geolocation (cloudfare, nginx offers this)
+
+### Session stickiness
+
+Some paradigms/ designs like session stickiness, aka same user go to same server.
+Examples include php servers storing user session serialized text file locally, if different server session lost.
+Load balancer can set a cookie with some random hash, store hash to server mapping or balance (partition) based on id.
+
+Best practice **not** to use session stickiness. store shared resource in shared location, e.g. `redis`/`memcached`/`mysql`.
+This also allows having caches close to users.
+
+### Server/LB redundancy
+
+- Active active: both LB active. direct request to either one (can be both same data, or 1 store half other store rest etc.)
+- Active passive: Primary LB works, generate heartbeat. Passive LB listen to heartbeat. Both listen/have the same public ip, different Virtual IP. Primary, die, secondary IP Address Takeover (IPAT) and duties.
+
+### Reverse proxies
+
+- forward proxy sits in front of client, before connecting to internet, e.g. school blocking certain sites.
+- reverse proxy sits in front of server, does:
+  - load balancing (Nginx software LB)
+  - caching (cloudfare cdn)
+  - ddos prevention (cloudfare again)
+  - SSL termination (forward request to servers unencrypted)
+- see [link](https://www.cloudflare.com/learning/cdn/glossary/reverse-proxy/)
+
+## Data stores
+
+### CAP theorem
+
+- \***\*C**onsistency\*\*: Database with 2 nodes, consistency = both nodes always same, not 1 updated 1 stale
+- \***\*A**vailability\*\*: Every request gets a response (no errors). response can be stale data
+- \***\*P**artition tolerance\*\*: System still operates despite network interference b/w nodes (e.g. 2 masters cannot sync)
+  - if network fails, Consistency = cancel transaction, Availability = proceed but sync later.
+
+### Replication
+
+- Master slave: slaves are clones of each other. Write to master, read from slave (read load balancer)
+- Master master: multiple masters. Still read from slave write to masters.
+  Additional write balancer for masters. Masters replicate writes of each other (network link b/w masters, see [partition tolerance](###CAP-theorem)).
+
+### RAID
+
+- way of storing data on multiple disks.
+- RAID 0: Drive 1 data blocks = `[1,3,5]`, Drive 2 = `[2,4,6]`. Read/Write blocks `1`, `2` >=2x faster since parallel. no fault tolerance
+- RAID 1: Drive 1 = `[1,2,3]`, Drive 2 = `[1,2,3]`. High read, can parallel, slow write, low capacity.
+- RAID 5: Need at least 3 drives. drives: `[1a,2a,p3]`,`[1b,p2,3a]`,`[p1,2b,3b]`. block 1 = `1a + 1b`. if 1 drive fails reconstruct from parity. ONLY 1 DRIVE STORES PARITY EACH BLOCK.
+
+### Scaling
+
+- [Stick to SQL] do [master slave replication](###Replication). write to master, master updates all slaves. read from slaves, high read throughput
+- [Stick to SQL] **federation**: split db up by function, e.g. 1 database for `Transactions`, 1 for `Users`, instead of 1 for both
+- [Stick to SQL] **sharding**: split **rows** into separate tables, e.g. table 1 users A to M, table 2 users M to Z. basically like partitioning.
+- [Stick to SQL] **denormalization** to avoid excessive joins, `Courses(cid, tid, cname)` to `Courses(cid, tid, cname, tname)` to avoid having to join with teachers to get `tname`. `tname` is duplicated though.
+- [Stick to SQL] **DB tuning**, using `CHAR` instead of `VARCHAR`, `NOT NULL` where possible, use indexes (self balancing B-Tree maintain sorted order) for fast lookup. Use profiling tools to keep hot tables separate.
+- [Denormalize everything] avoid joins in queries, can stick to SQL, or migrate to MongoDB(document store), Dynamo/Redis(KVP) etc.
+
+### NoSql
+
+1. **Key Value Store**: (redis, memcached, dynamoDB) O(1) rw, often in memory, sometimes with optional persistence
+   - (redis: RDB take snapshots at periodic intervals, Append Only File append only on write then replay on restart
+   - some kvp allow metadata utilities too. dynamo supports both kvp and document.
+2. **Document store**: (MongoDB, dynamoDB) stores documents like XML, JSON, binary.
+   - Allows query by metadata, very similar to key value.
+3. **Wide Column store**: (Google Bigtable, Facebook Cassandra, Hadoop HBase) columns = name value pair, columns grouped into column families. 1 row = many column families. Also have super column family, contains many rows.
+   - High availability high scalability. Very large datasets.
+4. **Graph**: (Neo4j) Each node a record (id: 1, name: alice), each edge = relationship b/w nodes.
+   - Ideal for complex relationships e.g. social network, many foreign keys, many to many relationships.
+
+### ACID vs BASE
+
+- Atomicity: transaction either all occurs or none (incl power failures)
+- Consistency: data **COMPLIES TO VALIDATION RULES** (not CAP consistency)
+- Isolation: Transaction is isolated from effects of other transactions. highest level == serializable, aka as if syncronous. lowest level == read uncommited, transaction can read data that is updated but not committed (i.e. can be rolled back).
+- Durability: transaction will remain even in case of failure (e.g. power failure), i.e. written to persistent storage
+- ACID = once write complete, data is consistent, all replicas same data
+- SQL also good for enforcing schemas, and handling complex joins
+- BASE = consistency might be lazy, i.e. after write finish data may actually only update when being read, or after write only master updated, slaves might not be updated yet.
+
+## caches
+
+Caches can be built as:
+
+1. In memory (redis, memcached). note that redis can be persistent.
+2. File based (Amazon file cache, S3 etc.)
+
+DNS is cached at every level (ISP, DNS servers, routers, browsers). Can open svchost in process hacker, records are in memory (sometimes HOSTS file used also)
+
+### Types
+
+1. Client side: store on user OS/browser (`localStorage`, `set-cookie`). HTTP caching.
+2. CDN caching: store frequently accessed assets (images, userdata, html) on CDNs close to users.
+3. Server caching: some reverse proxies have built in HTTP caching (`Nginx` caches `GET` and `HEAD`)
+4. DB caching: most databases have some form of caching (MySQL stores `SELECT` statements with its data in memory)
+
+### Targets
+
+- HTTP requests: done by browsers automatically. usually relies on http verbs to decide what can be cached (GET can POST cannot)
+  - set `Cache-Control` to determine when to expire cache, or if data should even be cached.
+- DB queries: cache specific query, e.g. `SELECT * FROM USERS`. Need to consider
+- Objects: cache entire objects, HTML, whole datasets etc.
+
+### Update strategies
+
+1. **Cache aside**: client writes to cache on cache miss
+2. **Write through**: Use cache as data store. user write to cache, cache write to db. db return, cache return to user.
+
+- set TTL since data might not be read
+
+3. **Write back**: Write through but async. cache adds write event to messaging queue, event processor writes to DB async.
+4. **Refresh ahead**: before a cache entry TTL expire, refresh from storage. Needs to accurately predict what stuff to refresh, if not defeats the point of TTL.
+
+### GraphQL caching
+
+- HTTP caching: GraphQL is language agnostic, so you can send everything as `POST`. However browser caching breaks since it relies on HTTP verbs.
+  - HTTP `GET` message body semantically has no meaning, URL max length is 2048 so large `GET`s require `POST`.
+  - make sure to send mutations with `POST`.
+- Having more complex queries: `GET /api/user/1` easy to cache, but not `GET /api/user?id=1,2`, since `GET /api/user?id=1` cannot use that cache.
+- Same for graphQL, because data is so customized the cache hits might be very rare. Technically dependent on developer skill. See [link](https://www.apollographql.com/blog/backend/caching/graphql-caching-the-elephant-in-the-room/)
+
+## Internet protocols
+
+### RPC
+
+- RPC = Remote procedure call, i.e. call a function remotely
+- RPC api URLs represent function names e.g. `/api/signup`, function arguments passed in body e.g. `{"name": "AAAA"}` (use `POST` request)
+- couples front end to back end service implementation. Might be difficult to cache (HTTP caching)
+- gRPC: google's RPC implementation, uses protobuf as data format, and http 2 primitives (browsers cannot support this). supports strong typing via proto file. encodes to binary.
+
+### REST
+
+- REST = REpresentational State Transfer, must be stateless. Technically not tied to HTTP, but whatever protocol you use, follow that protocol's standards
+- REST api URLs represent resources e.g. `POST /users` (instead of `POST /signup` per RPC).
+- HTTP Verbs are used to denote intentions, status codes stick to standard status responses, do not reinvent the wheel.
+- Sometimes some verbs do not accurately denote action (archive = `DELETE` + `POST`)
+
+## Async
+
+Operations can be done async for better performance and UX. Examples include server side rendering (SSR).
+If task can be done beforehand, like SSR, can run cronjob update periodically.
+Otherwise, use a messaging queue to send to workers, frontend periodically check operation status.
+
+### RabbitMQ
+
+- RabbitMQ is a message broker (producer/consumer), unlike pubsubs like kafka.
+- RabbitMQ is distributed, running on cluster of nodes with queues distributed among nodes with replication for high availability and fault tolerance
+- push based, has a prefetch limit so users do not get overwhelmed by pushes.
+- many languages supported: Go, Python, JavaScript etc.
+
+#### Use Cases
+
+- RabbitMQ handles medium load (20k+ msg/s) well. Push based (smart broker dumb client)
+- RabbitMQ is at the most basic level producer consumer, but can pub/sub (1 producer many consumer) as well.
+- RabbitMQ supports exchanges unlike Kafka:
+  - Direct exchange: queue A tied to broker with binding key "aaa", when broker receives message with key "aaa" broker sends to queue A
+  - Topic exchange: similar to Kafka, broker receive message with wildcard binding key "a.\*.b", queues with key "a.a.b" and "a.b.b" receive it.
+  - Fanout exchange: All queues associated to a fanout exchange receive the message, regardless of its binding key
+  - Headers exchange: uses arguments with headers, optional values --> for each queue, binding can specify parameters
+    e.g. format = txt, type = log, x-match = all. x-match can be `any` (if any parameters match the binding params, or `all` (all parameters must match. messages come in, parameters are checked if they match before sending to queue.
+  - RabbitMQ messages are deleted upon ACK by consumer, unlike Kafka's persistent logs (although RabbitMQ has append only log (streams) with non destructive consume (persistent messages))
+- see [link](https://www.simplilearn.com/kafka-vs-rabbitmq-article)
+
+#### Examples
+
+**Producer**:
+
+```js
+amqp.connect("amqp://localhost", function (error0, connection) {
+  if (error0) {
+    throw error0;
+  }
+  // if queue already exists, will not create.
+  connection.createChannel(function (error1, channel) {
+    if (error1) {
+      throw error1;
+    }
+    var queue = "hello";
+    var msg = "Hello world";
+    channel.assertQueue(queue, {
+      durable: false,
+    });
+    channel.sendToQueue(queue, Buffer.from(msg)); // queue accepts byte array
+  });
+});
+connection.close(); // shut down connection
+```
+
+**Consumer**:
+
+```js
+// If multiple consumers, round robin.
+amqp.connect("amqp://localhost", function (error0, connection) {
+  if (error0) {
+    throw error0;
+  }
+  // Either producer or consumer can create the channel first, dont matter
+  connection.createChannel(function (error1, channel) {
+    if (error1) {
+      throw error1;
+    }
+    var queue = "hello"; // queue name
+    var msg = "Hello world";
+    channel.assertQueue(queue, {
+      durable: false,
+    });
+    channel.prefetch(3); // Each worker only takes 3 messages max at a time, round robin to next free worker
+    // callback on consume
+    channel.consume(
+      queue,
+      msg => {
+        console.log(" [x] Received %s", msg.content.toString());
+        channel.ack(msg); // ACK message, e.g. indicate worker task done
+      },
+      { noAck: false }
+    ); // message must be ACK'd or it will be resent when consumer exits, Memory leak since cannot release messages
+  });
+});
+connection.close(); // shut down connection
+```
+
+### Kafka
+
+- Kafka is a event streaming platform (pub/sub) or message bus. does not employ message queue.
+- Kafka is pull based, how clients consume data is up to the client. (dumb broker smart client)
+  Clients request message batches with specific offsets (since changes are appended).
+  messages sent in batches for better throughput.
+- natively only supports Java, but has adapter SDKs (NodeJS, Ruby etc.)
+
+#### Use cases
+
+- Kafka is good for data processing without complex routing e.g. real time processing, data analysis
+- Kafka is also good for audit systems that need the messages stored permanently
+- Kafka has no exchanges (as in RabbitMQ) so complex routing cannot be done, uinlike traditional message queues. Its simplicity allows high scalability and throughput.

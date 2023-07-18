@@ -1,0 +1,73 @@
+.h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg,#3086e9,#f5165d);
+    width: fit-content;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+.h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    width: fit-content;
+    margin-bottom: 0.5rem;
+}
+
+.h2::after {
+    content: "";
+    width: 3ch;
+    border-bottom: solid 2px #f5165d;
+    display: block;
+}
+
+.h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.h3::first-letter {
+    color: #f5165d;
+}
+
+.p {
+    font-size: 0.8rem;
+    margin-bottom: 0.5em;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+.container {
+    background-color: #ffffff22;
+    padding-inline: 3ch;
+    padding-block: 4ch;
+}
+
+.code {
+    color: #3086e9;
+    background-color: #222;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    padding-inline: 5px;
+    padding-block: 2px;
+}
+
+.ol {
+    list-style-type: decimal;
+    margin-bottom: 0.5em;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 25px;
+    font-size: 0.8rem;
+}
+
+.ul {
+    list-style-type: disc;
+    margin-bottom: 0.5em;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 25px;
+    font-size: 0.8rem;
+}
