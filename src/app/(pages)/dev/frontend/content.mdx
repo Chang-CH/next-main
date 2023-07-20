@@ -80,12 +80,71 @@ In this case, `<p id="demo" class="test" style="color: pink;">` will be pink, si
 
 ## JS
 
-- throughput: amount of data transmitted at any given time
-- bandwidth: maximum theoretical throughput
-- latency: how long it takes a packet to travel from 1 point to another
+- closure: a way for functions to modify variables outside of their body. similar to `(() => this).bind(this)`.
+  Closures hold reference to constants outside scope, even if outer scope destroyed the constant is not GC due to referenced count.
+  - binding is less performant since it has additional checks as per the bind spec.
+- `arguments`: built in constant, array of arguments, can be used anywhere in a function.
+- `Proxy`: intercepts operations on objects, e.g. `get`, `set`. Example:
 
-```JS
-const a = () => {
-  return <div></div>
-}
+```js
+const target = {
+  msg1: "A",
+  msg2: "B",
+};
+
+const handler = {
+  get: function (obj, prop) {
+    if (prop === "msg1") {
+      return "C";
+    }
+    return Reflect.get(...arguments);
+  },
+};
+
+const proxy = new Proxy(target, handler);
+console.log(proxy.msg1); // C
+console.log(proxy.msg2); // B
 ```
+
+## React
+
+### Event loop
+
+{/* TODO: */}
+
+### Document Object Model (DOM)
+
+The DOM is a interface for HTML documents. It is not specific to JS.
+It represents all objects in the page as `Node`s. Different `Node` have different `Element` type, e.g. table, form etc.
+Elements can further implement other HTML interfaces, e.g. `HTMLElement`, `HTMLTableElement`, etc.
+HTML elements can be manipulated through the DOM by editing the properties of the interface they implement.
+Notable objects:
+
+1. `window`, `window.onload` etc.
+2. `document`, `document.getElementById()` etc.
+3. `Element.innerHTML`, `HTMLElement.style` etc.
+
+### Virtual DOM
+
+[link](https://blog.logrocket.com/virtual-dom-react/)
+
+Implementing react FC in raw JS, it might look like `() => <div><button/><button/></div>`. Now if we rerender the first button due to state change,
+the second button will get rerendered also. Virtual DOM tackles this by determining what has changed and only updates the parts of the DOM that changed.
+
+1. Initial Virtual DOM: React creates a replica of the actual DOM tree, from the root element all the way down.
+2. Diffing (Reconciliation): say state changed. React does DFS to traverse the virtual DOM and compare it with the snapshot of the previous virtual DOM.
+   It then creates a list of differences. Differences do not just mean dirty flag, i.e. if parent component classname changes the diff is only the classname,
+   children is not automatically assumed to be diffed (it will check the child also).
+3. Render: React used ReactDOM to update the actual DOM.
+
+This has some problems:
+
+1. Large DOM: very big blog with a clock at the top. Every second the clock updates, so every second React diffs the entire huge blog DOM tree.
+   1. [No library]: make the clock a separate component, so only the clock is diffed with itself.
+   2. [million js]: Block Virtual DOM, million does static analysis to identify dynamic parts, create an edit map. Only diff the dynamic parts.
+2. Shared state: 2 deeply nested child components need to share the same state
+   1. [No library]: prop drilling, pass the state down to the children, `useEffect` listen to prop change. Causes rerenders at every level.
+   2. [No library]: context, create a provider at the top, `useContext` at the bottom. Causes rerenders of all children of context provider also.
+      can `useMemo` static components to avoid this.
+   3. [Redux]: single giant state store. actually uses context under the hood but is opimized so only updated components rerender (the context never changes).
+   4. [recoil]: atoms and selectors. atoms = state, selectors listen to the atoms/other selectors, when upstream update selector updates
