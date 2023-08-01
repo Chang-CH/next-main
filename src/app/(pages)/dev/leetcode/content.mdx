@@ -21,43 +21,19 @@ Based on input size, estimate time complexity.
 1. sort: `array.sort()`, sorts in place, `sorted(array)`, returns sorted array
 2. reverse: `array.reverse()`, reverses in place
 3. binary search: `bisect.bisect_left(array, target)`, returns index of target if found, else index of where target should be inserted
-4. heap: `heapq.heapify(array)`, `heapq.heappop(array)`, `heapq.heappush(array, item)`
-5. deque: `collections.deque()`, `deque.append(item)`, `deque.popleft()`
+4. heap: `heapq.heapify(array)`, `heapq.heappop(array)`, `heapq.heappush(array, item)`.
+5. deque: `collections.deque()`, `deque.append(item)`, `deque.popleft()`.
+6. string reverse: `"string"[::-1]`.
+7. string finding: `"string" in "longstring"`, `"asdf".find("as")`.
+8. set: `a = set()`, `a.add("ele")`, `"ele" in a`, `a.remove("ele")`.
+9. dict: `a = dict()`, `a["key"] = "value"`, `"key" in a`, `del a["key"]`, `list(a.keys())`, `a.values()`.
 
 ### Code Snippets
 
-1. BFS
+1. Toposort/DFS
 
 ```py
-def bfs(graph, start): # TODO: check if this is correct
-    visited = set()
-    queue = deque([start])
-    while queue:
-        node = queue.popleft()
-        if node not in visited:
-            visited.add(node)
-            queue.extend(graph[node] - visited)
-    return visited
-```
-
-2. DFS
-
-```py
-def dfs(graph, start): # TODO: check if this is correct
-    visited = set()
-    stack = [start]
-    while stack:
-        node = stack.pop()
-        if node not in visited:
-            visited.add(node)
-            stack.extend(graph[node] - visited)
-    return visited
-```
-
-3. Toposort
-
-```py
-def toposort(graph): # TODO: check if this is correct
+def toposort(graph):
     visited = set()
     stack = []
     def dfs(node):
@@ -71,66 +47,42 @@ def toposort(graph): # TODO: check if this is correct
     return stack[::-1]
 ```
 
-4. Union Find
+2.  KMP O(N + M): find pattern in text
 
 ```py
-class UnionFind: # TODO: check if this is correct
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [0] * n
+def lpsstr(self, string):
+    length = len(string)
+    lps = [0] * length
 
-    def find(self, x):
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])
-        return self.parent[x]
+    if length <= 1:
+        return lps
 
-    def union(self, x, y):
-        px, py = self.find(x), self.find(y)
-        if px == py:
-            return False
-        if self.rank[px] < self.rank[py]:
-            self.parent[px] = py
-        elif self.rank[px] > self.rank[py]:
-            self.parent[py] = px
-        else:
-            self.parent[py] = px
-            self.rank[px] += 1
-        return True
-```
+    longest = 0
+    index = 1 # prefix/suffix cannot be whole word
+    while index < length:
+        if string[index] == string[longest]:
+            longest += 1
+            lps[index] = longest
+            index += 1 # character matches, check next character extends prefix/suffix
+        elif longest == 0:
+            index += 1 # no prefix to match, move to next character
+        else: # see if current char can extend the next longest suffix
+            longest = lps[longest - 1]
+    return lps
 
-5. KMP O(N + M): find pattern in text
-
-```py
-def kmp(text, pattern): # TODO: check if this is correct
-    n, m = len(text), len(pattern)
-    if m == 0:
-        return 0
-    lps = [0] * m
-    i, j = 1, 0
-    while i < m:
-        if pattern[i] == pattern[j]:
-            j += 1
-            lps[i] = j
+def KMP(search, pattern) -> str:
+    length = len(search)
+    lps = self.lpsstr(search)
+    i = 0
+    r_i = 0
+    while r_i < length:
+        if s[i] == r[r_i]:
             i += 1
+            r_i += 1 # save longest common pattern etc here
+        elif i == 0:
+            r_i += 1
         else:
-            if j != 0:
-                j = lps[j - 1]
-            else:
-                lps[i] = 0
-                i += 1
-    i, j = 0, 0
-    while i < n:
-        if text[i] == pattern[j]:
-            i += 1
-            j += 1
-        if j == m:
-            return i - j
-        elif i < n and pattern[j] != text[i]:
-            if j != 0:
-                j = lps[j - 1]
-            else:
-                i += 1
-    return -1
+            i = lps[i - 1]
 ```
 
 ## Binary
@@ -154,6 +106,39 @@ Alternative method, jump and mark.
 ## Binary Tree
 
 ## Dynamic Programming
+
+### Video Stitching/ Minimum interval cover
+
+[Video Stitching](https://leetcode.com/problems/video-stitching/description/) Given an array of intervals `[i,j]`, find the minimum number of intervals to cover `[0,T]`.
+
+1. Intuition: greedy, suppose longest interval starting from 0 is `[0, j]`
+2. pick the interval that starts before `j` and ends the latest.
+3. We can never be wrong since whatever interval starts the other shorter intervals can use, we can also use.
+4. TLDR: sort wrt. start time NlogN, pick interval that ends the latest in the current range N.
+
+### Non-overlapping Intervals
+
+[Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals) Given an array of intervals, find the minimum number of intervals to remove so no intervals are overlapping.
+
+1. Intuition: If we know the maximum number of overlapping intervals, we can just subtract it from the number of intervals to get ans
+2. Intuition 2: If we greedily pick the interval with the closest end time, we will always be optimal:
+3. If the next closest interval is in one optimal solution, you can replace it with the current and the solution is still optimal.
+4. TLDR: Sort by interval end, pick interval with closest end time with start time after current end time.
+
+### Longest Common Substring
+
+[Longest Common Substring](https://leetcode.com/problems/longest-common-subsequence/) O(N + M), S(M): Given two strings text1 and text2,
+return the length of their longest common subsequence.
+
+1. KMP algorithm, DP find longest prefix suffix
+   1. longest prefix suffix = longest prefix that is a suffix, except whole string. abab -> ab, not abab.
+   2. e.g. abaabab, a = lps 0.
+   3. if `pat[i] == pat[len]` character i extends the lps, `lps[i] = len + 1`, `len++`, `i++`
+   4. if `pat[i] != pat[len]`, `len = lps[len - 1],` `i` do not change.
+   5. e.g. `abaaba[b]`, b does not extend lps, so we check if b extends the lps of aba (prefix of aba is also prefix of abaaba)
+2. Match and jump, e.g. `abacaba` match `ababa`.
+3. `aba[c]aba i = 3, aba[b]a j = 3`, b does not match.
+4. use LPS of `aba`, we know that the suffix `ab[a]caba i = 0` matched prefix `[a]baba j = 0`, so check `aba[c]aba i = 3`.
 
 ### Longest Palindromic Substring
 
@@ -200,9 +185,37 @@ Manachers algorithm O(NlogN): e.g. `$#A#B#A#B#A#B#A#@`
 
 ## Union Find
 
-**TO BE SORTED**
+### Accounts Merge
 
-1. Manacher's algorithm longest palindromic substring
-2. KMP algorithm
-3. Find missing number no extra space
-4. Sort colors:
+[Accounts Merge](https://leetcode.com/problems/accounts-merge/description/), given a list of accounts `[name, ...emails]`, merge accounts with same emails.
+
+```py
+class UF:
+    def __init__(self, N):
+        self.parents = list(range(N)) # If parent is itself, is root
+    def union(self, child, parent):
+        self.parents[self.find(child)] = self.find(parent) # set root of child to parent root
+    def find(self, x):
+        if x != self.parents[x]: # If not root, find root
+            self.parents[x] = self.find(self.parents[x]) # set root of x to real root, collapse tree
+        return self.parents[x]
+
+class Solution:
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        uf = UF(len(accounts))
+
+        # Creat unions between indexes
+        ownership = {}
+        for i, (_, *emails) in enumerate(accounts):
+            for email in emails:
+                if email in ownership:
+                    uf.union(i, ownership[email])
+                ownership[email] = i
+
+        # Append emails to correct index
+        ans = collections.defaultdict(list)
+        for email, owner in ownership.items():
+            ans[uf.find(owner)].append(email)
+
+        return [[accounts[i][0]] + sorted(emails) for i, emails in ans.items()]
+```
