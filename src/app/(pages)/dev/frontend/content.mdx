@@ -28,6 +28,10 @@ Note that these selectors can be combined, e.g. `p.test#demo` will select `<p id
    4. `:first-child` - Selects the first child element
 6. pseudo element selector: `p::first-line` selects the first line of all p elements
    1. `a::after` - Insert something after the content of each `<p>` element.
+7. ` ` descendant selector, `p span` selects all span elements inside p elements (regardless of nesting)
+8. `>` child selector, `p > span` selects all span elements where the parent is a p element (direct child)
+9. `+` adjacent sibling selector, `p + span` selects all span elements that are placed immediately after p elements (`<p/><span/>`)
+10. `~` general sibling selector, `p ~ span` selects all span elements that are placed after (not before) p elements (`<p/><span/><span/>`)
 
 ```css
 a::after {
@@ -80,7 +84,7 @@ In this case, `<p id="demo" class="test" style="color: pink;">` will be pink, si
 
 ## JS
 
-- closure: a way for functions to modify variables outside of their body. similar to `(() => this).bind(this)`.
+- closure: a way for functions to modify variables outside of their body `var x = 1; function a() {console.log(x)}`. similar to `(() => this).bind(this)`.
   Closures hold reference to constants outside scope, even if outer scope destroyed the constant is not GC due to referenced count.
   - binding is less performant since it has additional checks as per the bind spec.
 - `arguments`: built in constant, array of arguments, can be used anywhere in a function.
@@ -106,11 +110,89 @@ console.log(proxy.msg1); // C
 console.log(proxy.msg2); // B
 ```
 
-## React
-
 ### Event loop
 
-{/* TODO: */}
+- `setTimeout`, DOM, AJAX (Async Js And Xml) etc. are not in V8(JS) runtime, it is implemented in the browser API.
+- callback queue: contains event messages: `onClick`, `onLoad` etc.
+- browser rendering happens on the same call stack as code logic. blocking/slow code will cause browser rendering freezes
+
+```js
+console.log("1");
+setTimeout(() => console.log("2"), 0);
+console.log("3");
+```
+
+1. `1` is printed
+2. `setTimeout` line is executed. js side, we just get the promise. browserAPI `setTimeout` executes.
+3. timer runs out, callback is pushed into task queue.
+4. Event loop ** waits until stack is empty** before pushing code onto stack
+5. Stack is not empty due to line 3, `3` is printed.
+6. Stack is empty, callback is pushed onto stack, executed. `2` is printed.
+
+Due to the logic of the event loop, we get some phenomena:
+
+- `setTimeout(cb, 0)`: 0 second timeouts, effectively just defers running cb until stack is clear.
+- browser render can only happen when stack is clear, so slow code will cause browser to freeze.
+- render has higher priority than callbacks, so if stack is empty render gets pushed onto stack before callback queue.
+- processing large array sync, browser cannot render in between. `setTimeout(cb, 0)` for each element, render happens in between processing each element.
+
+### JQuery
+
+Shorthand for DOM manipulation. e.g. `$("p").hide()` hides all `<p>` elements. Follows css selector syntax (including ` ` descendant, `>`, `~` etc.)
+
+- effects: `$("#demo").fadeIn()`, `$("#demo").hide()` etc.
+- traversing: `$("#demo").parent()`, `$("#demo").children()` etc.
+- DOM manipulation: `$("#demo").append("<p>hello</p>")`, `$("#demo").attr("href", "a.com")` etc.
+
+### Variable issues: immediately Invoked Function Expression (IIFE) + Scoping
+
+before ES2015 JS only had var, and var did not have block scope, only function scope (anywhere in the function where they were declared).
+So to create a scope, we use IIFE.
+
+```js
+{
+  let p = 110;
+  var q = 111;
+}
+console.log(p); // reference error
+console.log(q); // ok
+
+(function () {
+  var q = 111;
+})(); // notice the brackets around the function, if not will not work.
+console.log(q); // reference error
+
+var a = 1;
+let b = 1;
+{
+  var a = 2;
+  let b = 2;
+}
+// a = 2, b = 1
+```
+
+This is because of var **hoisting**: a variable is hoisted (regardless of block scope) to the top of the function it is declared in.
+This is why `console.log(x); var x = 10;` works (it prints undefined)
+
+### Prototypal Inheritance
+
+```js
+function Parent() {
+  this.name = "Parent";
+}
+
+Parent.prototype.greet = function () {
+  console.log("Hello from " + this.name);
+};
+
+const child = Object.create(Parent.prototype);
+
+child.cry = () => console.log("AAA");
+child.cry(); // AAA
+child.greet(); // Hello from parent
+```
+
+## React
 
 ### Document Object Model (DOM)
 

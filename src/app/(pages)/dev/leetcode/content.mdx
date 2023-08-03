@@ -47,44 +47,6 @@ def toposort(graph):
     return stack[::-1]
 ```
 
-2.  KMP O(N + M): find pattern in text
-
-```py
-def lpsstr(self, string):
-    length = len(string)
-    lps = [0] * length
-
-    if length <= 1:
-        return lps
-
-    longest = 0
-    index = 1 # prefix/suffix cannot be whole word
-    while index < length:
-        if string[index] == string[longest]:
-            longest += 1
-            lps[index] = longest
-            index += 1 # character matches, check next character extends prefix/suffix
-        elif longest == 0:
-            index += 1 # no prefix to match, move to next character
-        else: # see if current char can extend the next longest suffix
-            longest = lps[longest - 1]
-    return lps
-
-def KMP(search, pattern) -> str:
-    length = len(search)
-    lps = self.lpsstr(search)
-    i = 0
-    r_i = 0
-    while r_i < length:
-        if s[i] == r[r_i]:
-            i += 1
-            r_i += 1 # save longest common pattern etc here
-        elif i == 0:
-            r_i += 1
-        else:
-            i = lps[i - 1]
-```
-
 ## Binary
 
 Missing number in array of size n with numbers 0 to n.
@@ -180,6 +142,58 @@ Manachers algorithm O(NlogN): e.g. `$#A#B#A#B#A#B#A#@`
 ## Stack
 
 ## String
+
+### Shortest palindrome
+
+[Shortest Palindrome](https://leetcode.com/problems/shortest-palindrome/) O(N + M): Given a string, prepend the fewest number of characters to make it a palindrome.
+
+1. Intuition: reduces to find the longest prefix of the string matching the suffix of the reversed string.
+2. KMP Algorithm: Precompute the Longest Prefix Suffix:
+   1. `lps[i] = k`, string from `[0,i]`, first k characters = last k. cannot be whole string.
+   2. e.g. `abab -> ab`
+   3. Intuition: `aabaa[b]`, if `lps[4]` = 2 = lpslength, then we only need to check `str[lpslength] == str[5]`.
+   4. Intuition: `aabaa[c]`, `str[2] != str[5]`, but we do not know lps of aa = `lps[lpslength -1]` = 1, so we only check `str[1] == str[5]`.
+3. KMP Algorithm: search with LPS array
+   1. start matching from index 0. suppose mismatch at index `k`.
+   2. `lps[k] = j`, we know that the first `j` characters of the pattern string match the last `j` characters of the current substring `str[0:k]`
+   3. check `pattern[j] = str[k]`, repeat.
+
+**Implementation**
+
+```py
+def lpsstr(self, string):
+    length = len(string)
+    lps = [0] * length
+
+    if length <= 1: return lps
+
+    longest = 0
+    index = 1 # prefix/suffix cannot be whole word
+    while index < length: # no for loop: if mismatch we do not want to move index
+        if string[index] == string[longest]:
+            longest += 1
+            lps[index] = longest
+            index += 1 # character matches, check next character extends prefix/suffix
+        elif longest == 0:
+            index += 1 # no prefix to match, move to next character
+        else: # see if current char can extend the next longest suffix
+            longest = lps[longest - 1]
+    return lps
+
+def KMP(search, pattern) -> str:
+    length = len(search)
+    lps = self.lpsstr(search)
+    i = 0
+    r_i = 0
+    while r_i < length:
+        if s[i] == r[r_i]:
+            i += 1
+            r_i += 1 # save longest common pattern etc here
+        elif i == 0:
+            r_i += 1
+        else:
+            i = lps[i - 1]
+```
 
 ## Trie
 
