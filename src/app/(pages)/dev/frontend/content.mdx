@@ -84,10 +84,8 @@ In this case, `<p id="demo" class="test" style="color: pink;">` will be pink, si
 
 ## JS
 
-- closure: a way for functions to modify variables outside of their body `var x = 1; function a() {console.log(x)}`. similar to `(() => this).bind(this)`.
-  Closures hold reference to constants outside scope, even if outer scope destroyed the constant is not GC due to referenced count.
-  - binding is less performant since it has additional checks as per the bind spec.
-- `arguments`: built in constant, array of arguments, can be used anywhere in a function.
+Random stuff:
+
 - `Proxy`: intercepts operations on objects, e.g. `get`, `set`. Example:
 
 ```js
@@ -108,6 +106,96 @@ const handler = {
 const proxy = new Proxy(target, handler);
 console.log(proxy.msg1); // C
 console.log(proxy.msg2); // B
+```
+
+### This
+
+Refers to the caller of a function, determined at **runtime**. Missing in arrow functions.
+Can be bound ahead of time so `this` is fixed regardless of how its called.
+Its value depends on the context in which it is called:
+
+1. Function + object: `this` refers to the **object used** to call the function
+
+```js
+function get() {
+  return this;
+}
+obj.func = get;
+obj2.func = obj.func;
+obj.func(); // obj
+obj2.func(); // obj2
+```
+
+2. Function: If called directly `get()`, `this` is `undefined` in strict mode, `globalThis` in non strict
+3. Callbacks: usually called directly `get()`, undefined.
+4. Arrow functions: `this` is bound by closure to its context at creation (global scope, `globalThis`).
+5. `super`: special case, `this` refers to the current object, not the parent `suepr` is pointing to.
+6. constructor: `this` refers to the object returned by `new`.
+7. derived constructor:`new Derived()`, `this` = `new Parent()`. constructor must return an object (overrides `this`), or call `super()` first.
+
+### Var and Hoisting
+
+variables (and functions) are either function scoped or global scoped. They are **NOT** block scoped.
+Before any code runs, all variable and function declarations are hoisted to the top. Note that the initialization is not hoisted.
+
+```js
+console.log(a); // undefined
+if (true) {
+  var a = 1;
+}
+console.log(a); // 1, ignores block scope
+function b() {
+  var b = 2;
+}
+console.log(b); // ReferenceError, function scoped.
+```
+
+### Closures
+
+- closure: a way for functions to access/modify variables outside of their body `const x = 1; function a() {console.log(x)}`. similar to `(() => this).bind(this)`.
+- Created at function creation time.
+- Closures hold reference to constants outside scope, even if outer scope destroyed the constant is not GC due to referenced count.
+  - binding is less performant since it has additional checks as per the bind spec.
+  - Can be used to make private variables: variable in outer scope can only be accessed in the function with closure.
+
+```js
+function a() {
+  // also possible with if blocks and const/let
+  const x = 1;
+  return function b() {
+    console.log(x);
+  };
+}
+a()(); // 1
+```
+
+### arrow vs function declaration
+
+Stuff missing in arrows:
+
+- `arguments`: built in constant, array of arguments, can be used anywhere in a function.
+- `this`: constant, reference to object that called the function. if arrow function is declared in a class, `this` is bound via closure.
+
+Due to arrows missing `this`, they are good candidates for callbacks which need the outer `this`, e.g. in `setTimeout`.
+In addition:
+
+- arrows cannot be used as constructors
+
+```js
+class C {
+  a = 999;
+  B() { return this.a;}
+  C = () => this.a; // closure binds C's this
+}
+const {B, C} = new C();
+C(); // 999, B() gives TypeError: this is undefined.
+
+const obj = {
+  a = 999;
+  B() { return this.a;}
+  C = () => this.a; // obj has no this for C to bind
+}
+B(); // 999, C() gives TypeError: this is undefined.
 ```
 
 ### Event loop
@@ -177,19 +265,20 @@ This is why `console.log(x); var x = 10;` works (it prints undefined)
 ### Prototypal Inheritance
 
 ```js
-function Parent() {
-  this.name = "Parent";
+function Parent(name) {
+  this.name = name;
 }
 
 Parent.prototype.greet = function () {
-  console.log("Hello from " + this.name);
-};
+  console.log("(P)Hello from " + this.name);
+}; // const p = new Parent("name"); p.greet();
 
 const child = Object.create(Parent.prototype);
-
+// or child.prototype = Parent
+child.name = "kid";
 child.cry = () => console.log("AAA");
 child.cry(); // AAA
-child.greet(); // Hello from parent
+child.greet(); // (P)Hello from kid
 ```
 
 ## React

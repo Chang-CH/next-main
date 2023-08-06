@@ -4,7 +4,7 @@
 
 ### Resolving IP of page
 
-1. Check local DNS cache (browser, OS)
+1. Check local DNS cache (browser, OS), short lived
 2. Resolving nameserver (Internet Service Provider)
 3. Root nameserver
 4. Top Level Domain server (.com, .net etc.)
@@ -18,7 +18,7 @@ note: DNS resolution uses UDP. Use DNS over HTTPS to encrypt for privacy (defaul
 2. Server responds with SYN + ACK
 3. Client sends ACK to server
 
-### Establish HTTPS
+### Establish HTTPS (over TCP connection)
 
 [reference](https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/)
 
@@ -26,6 +26,19 @@ note: DNS resolution uses UDP. Use DNS over HTTPS to encrypt for privacy (defaul
 2. Server responds with `Server hello` + SSL Certificate (from CA authority) + server random + selected cipher suite + server random
    - server sends the `Finish` message, since it can calculate shared key already
 3. Client calculate shared key from Diffie Hellman parameters + server random, send client `Finish`.
+4. Note that all this is done in the TCP layer.
+
+**What is protected by HTTPS**:
+
+1. URL path + query params (Note: domain name is sent in clear text during TLS negotiation, so not encrypted)
+2. HTTP headers
+3. HTTP body Contents
+4. Cookies
+
+**What is not protected**:
+
+1. IP address (TCP/IP layer 3)
+2. Port number
 
 ### Send HTTP request
 
@@ -237,7 +250,8 @@ Router has 1 public IP. All devices in LAN have private IP, WAN = public IP.
 
 ## Cross Origin Request Sharing
 
-- HTTP header based mechanism, indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources.
+- HTTP header based mechanism enforced by the client (**Browser**)
+- indicates origins (domain, scheme, or port) other than its own from which a browser should permit loading resources.
 - Include `Fetch`, images in canvas `drawImage` etc.
 - some requests trigger a CORS preflight: `OPTION` request to server (with origin, method, headers), server return allowed, origin, methods etc.
 - server can return `Access-Control-Allow-Origin: *` to allow all origins, or specific origins to guard against CSRF
