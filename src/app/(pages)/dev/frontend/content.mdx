@@ -13,6 +13,53 @@ CSS box model is a box that wraps around every HTML element. It consists of: mar
 
 When setting the height and width of an element, you set the **CONTENT** dimensions.
 
+### Display
+
+1. `inline`: element will not start on a new line. Does not fill space. width and height do not work, element size is based on content.
+2. `block`: element will start on a new line. Fills width. width and height work.
+3. `inline-block`: inline but can set width and height.
+4. `none`: element is removed from page, occupies no space. `visibility: hidden` is similar but element still takes up space.
+5. `table`, `table-row`, `table-cell`: replicates the html table, `tr`, `td` elements.
+6. `flex`: flexbox layout, see below.
+7. `grid`: grid layout, like flex, more advanced.
+8. `initial`, `inherit`: default value, inherit from parent respectively.
+
+Display flex:
+
+1. container: `flex`/`inline-flex`, changes if it is inline.
+2. `flex-direction`: row or column
+3. `flex-wrap`: wrap or nowrap, breaks to newline
+4. `justify-content`: aligns items along main axis (see flex direction)
+   - `flex-start`, `center`, `end`: left center right.
+   - `space-between`: 1st item at start, last at end, space evenly distributed.
+   - `space-around`: 1 unit of space between container and item, 2 unit between items.
+   - `space-evenly`: 2 units space between item and item/container.
+5. `align-items`: aligns items along cross axis (perpendicular to flex direction)
+6. `align-content`: justify content for the cross axis, for lines.
+7. `flex-grow`: relative space an element takes, 2 means takes twice of other elements.
+
+Display grid:
+
+1. `grid-template-rows` (+ columns): e.g. `1fr 20% 30px`, 1st column is 1 unit, second 20% etc. fr is similar to flex grow.
+2. `column-gap`, `row-gap`: gap between columns/rows.
+3. `justify-items`, `align-items`: start, center, stretch, end for row / column direction respectively.
+4. `justify-content`, `align-content`: start, center, stretch, end for the entire grid (if smaller than parent).
+5. `grid-auto-rows` (+ columns): sets default width/height of rows/columns.
+6. `grid-auto-flow`: auto placement algo, `row` fills row `column` self explanatory. `dense`, if different size, try to minimise empty cells.
+7. `grid-row`, `grid-column`: `1/3` means start at row 1, end at row 3 (2 units long).
+
+### Media Queries Responsive Design
+
+Wrap around classes, like an if else selector for screen size, orientation etc.
+
+```css
+@media (min-width: 50em) {
+  article {
+    column-count: 2; // have 2 columns of text if width > 50em
+  }
+}
+```
+
 ### Selectors
 
 Note that these selectors can be combined, e.g. `p.test#demo` will select `<p id="demo" class="test">`.
@@ -200,22 +247,95 @@ B(); // 999, C() gives TypeError: this is undefined.
 
 ### Event loop
 
+**Preamble**
+
 - `setTimeout`, DOM, AJAX (Async Js And Xml) etc. are not in V8(JS) runtime, it is implemented in the browser API.
-- callback queue: contains event messages: `onClick`, `onLoad` etc.
-- browser rendering happens on the same call stack as code logic. blocking/slow code will cause browser rendering freezes
+- JS is single threaded. rendering and logic occurs on the same stack.
+- `async` functions are run as **SYNCHRONOUS** functions until the first await. each await + code after it is 1 microtask.
+- `await` uses microtasks under the hood to resume execution.
+
+**Components**
+
+1. call stack: main stack of the JS thread. logic executes here.
+2. callback (aka macrotasks) queue: contains event messages (`onClick`, `onLoad` etc.), also contains callbacks e.g. from `setTimeout`. `script` is also a macrotask.
+3. microtasks queue: contains microtasks waiting to be run. includes `.then(cb)`, `await`, etc. only come from code.
+
+**Rules**
+
+1. task dequeued from macrotasks
+2. task runs to completion (stack empty, script finished)
+3. all microtasks run. if microtasks create new microtasks, also run.
+4. render if necessary
+5. run next macrotask/wait till new macrotask
+
+**Example**
 
 ```js
-console.log("1");
-setTimeout(() => console.log("2"), 0);
-console.log("3");
+setTimeout(() => console.log(1), 0);
+Promise.resolve().then(() => console.log(2));
+const b = async () => {
+  console.log(5);
+};
+const a = async () => {
+  await console.log(3);
+  console.log(7);
+  await setTimeout(() => console.log(8));
+  console.log(9);
+};
+b();
+a();
+Promise.resolve().then(() => console.log(6));
+console.log(4);
 ```
 
-1. `1` is printed
-2. `setTimeout` line is executed. js side, we just get the promise. browserAPI `setTimeout` executes.
-3. timer runs out, callback is pushed into task queue.
-4. Event loop ** waits until stack is empty** before pushing code onto stack
-5. Stack is not empty due to line 3, `3` is printed.
-6. Stack is empty, callback is pushed onto stack, executed. `2` is printed.
+1. (step 0) `script` is in macrotask. stack is empty, `script` is pushed onto stack.
+
+```js
+setTimeout(() => console.log(1), 0);
+```
+
+2. `console.log(1)` added to macrotask queue.
+
+```js
+Promise.resolve().then(() => console.log(2));
+```
+
+3. `console.log(2)` added to microtask queue.
+
+```js
+b();
+console.log(5);
+```
+
+4. `5` is logged. no await so runs synchronously.
+
+```js
+a();
+await console.log(3);
+```
+
+5. `3` is logged, since the function is run synchronously. `await` resolution + `7` onwards added as microtask.
+
+```js
+Promise.resolve().then(() => console.log(6));
+```
+
+6. `console.log(6)` added to microtask queue.
+
+```js
+console.log(4);
+```
+
+7. `4` logged sync.
+
+```js
+microtasks = [() => console.log(2), () => {console.log(7); await ...}, () => console.log(6)]
+```
+
+8. main stack empty, script finished. run all microtasks. `2` is logged, then `7`.
+9. `setTimeout(() => console.log(8));` is also run. returns a `timeoutID` (not a promise). `console.log(9)` (and previous await) added to microtask queue
+10. `9` logged. no more microtasks. render once by browser.
+11. dequeue macrotasks: `1`, `8`.
 
 Due to the logic of the event loop, we get some phenomena:
 
@@ -223,6 +343,17 @@ Due to the logic of the event loop, we get some phenomena:
 - browser render can only happen when stack is clear, so slow code will cause browser to freeze.
 - render has higher priority than callbacks, so if stack is empty render gets pushed onto stack before callback queue.
 - processing large array sync, browser cannot render in between. `setTimeout(cb, 0)` for each element, render happens in between processing each element.
+- `requestAnimationFrame(cb)` can be used to run `cb()` every frame instead of `setTimeout(1000/60)` to avoid extra render calculations
+- `requestAnimationFrame` runs **BEFORE** render (safari + edge is after render): if we want to change something the next render frame, need 2 rAF.
+
+```js
+box.style.transform = "translateX(200px)"; // not rendered yet, transform = 200px
+requestAnimationFrame(() => {
+  box.style.transform = "translateX(100px)";
+}); // not rendered yet.
+// before render: run callback, transform = 100px
+// render 100px in 1 frame, not 200px in 1 frame then 100px in next frame
+```
 
 ### JQuery
 
@@ -410,3 +541,11 @@ React lifecycles (class methods) are split into 3 phases: mount, update, unmount
 3. [Updating] `shouldComponentUpdate(nextProps, nextState)` -> `componentWillUpdate()`: pre rerender. `shouldComponentUpdate` can be used to avoid rerendering unnecessarily.
 4. [Updating] rerender -> `componentDidUpdate()`: post update
 5. [Unmounting] `componentWillUnmount()`: cleanup, allows you to cancel timers, clear data structures etc.
+
+### Bubbling
+
+- When an event happens on an element, that event is also passed to its parents.
+- button in a div, onclick event bubbled to div also.
+- `event.target` is element where the event actually happened.
+- `event.stopPropagation` prevents this from happening.
+- `event.preventDefault` does not stop bubbling. It is used for disabling default actions (e.g. toggling checkboxes)
