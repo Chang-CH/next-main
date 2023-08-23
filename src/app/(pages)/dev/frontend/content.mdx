@@ -487,6 +487,8 @@ Additional notes:
 - React and JSX: `const child = <Child/>` does not actually render child. it is equivalent to `child = React.createElement(Child, null, null);`.
 - `createElement` returns a new object. Thus comparing the old child to new will always fail
 - if `memo`d (`React.memo(Child)`), object equality passes, so child is not rerendered.
+- `key` prop is used to identify elements of an array. Duplicate key might cause wrong element to be updated. No key provided, react uses array index as key.
+- if we push at the start of an array without key prop, e.g. `3 1 2`, all 3 elements rerender. if key is set properly react notices only element `3` changed.
 
 ```js
 function Parent() {
