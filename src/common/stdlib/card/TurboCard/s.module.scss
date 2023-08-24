@@ -19,6 +19,10 @@ $border-width: 2px;
   border-radius: $component-radius;
 }
 
+.container:hover {
+  box-shadow: 0px 0px 3px 1px black;
+}
+
 .divContent {
   width: 100%;
   height: 100%;
