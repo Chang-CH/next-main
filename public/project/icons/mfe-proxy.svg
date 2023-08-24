@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 813 638">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-linecap: round;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        fill: transparent;
+        stroke-miterlimit: 10;
+        stroke-width: 20px;
+      }
+
+      .cls-1, .cls-3 {
+        stroke: #3086e9;
+      }
+
+      .cls-2 {
+        stroke: #f5165d;
+      }
+    </style>
+  </defs>
+  <g>
+    <ellipse class="cls-2" cx="659.5" cy="240" rx="135.5" ry="45"/>
+    <ellipse class="cls-2" cx="659.5" cy="55" rx="135.5" ry="45"/>
+    <line class="cls-2" x1="524" y1="55" x2="524" y2="240"/>
+    <line class="cls-2" x1="795" y1="240" x2="795" y2="55"/>
+  </g>
+  <g>
+    <ellipse class="cls-2" cx="667.5" cy="583" rx="135.5" ry="45"/>
+    <ellipse class="cls-2" cx="667.5" cy="398" rx="135.5" ry="45"/>
+    <line class="cls-2" x1="532" y1="398" x2="532" y2="583"/>
+    <line class="cls-2" x1="803" y1="583" x2="803" y2="398"/>
+  </g>
+  <g>
+    <ellipse class="cls-3" cx="145.5" cy="385" rx="135.5" ry="45"/>
+    <ellipse class="cls-3" cx="145.5" cy="200" rx="135.5" ry="45"/>
+    <line class="cls-3" x1="10" y1="200" x2="10" y2="385"/>
+    <line class="cls-3" x1="281" y1="385" x2="281" y2="200"/>
+  </g>
+  <polyline class="cls-1" points="340.65 285 472 190 406.33 183.83"/>
+  <polyline class="cls-1" points="340.65 370.48 462.74 490.5 451 423"/>
+</svg>

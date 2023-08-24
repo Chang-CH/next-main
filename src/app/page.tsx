@@ -13,6 +13,7 @@ import MidiPlayer from "@/common/gizmos/MidiPlayer";
 import Timeline from "@/common/stdlib/timeline/SimpleTimeline";
 import TurboCard from "@/common/stdlib/card/TurboCard";
 import Link from "next/link";
+import Image from "next/image";
 
 const Home = () => {
   return (
@@ -35,11 +36,14 @@ const Home = () => {
               <div className="flex flex-row">
                 <a
                   href="https://www.linkedin.com/in/chuan-hao-c-57b096208/"
-                  className="mr-3"
+                  className={styles.socialLink}
                 >
                   <FaLinkedin size={28} />
                 </a>
-                <a href="https://github.com/Chang-CH">
+                <a
+                  href="https://github.com/Chang-CH"
+                  className={styles.socialLink}
+                >
                   <FaGithub size={28} />
                 </a>
               </div>
@@ -126,6 +130,12 @@ const Home = () => {
           <div className={styles.divProjects}>
             <a href="https://www.npmjs.com/package/@chang-ch/mfe-proxy">
               <TurboCard className={styles.cardProject}>
+                <Image
+                  src="/project/icons/mfe-proxy.svg"
+                  width={75}
+                  height={75}
+                  alt="Mfe-proxy Icon"
+                />
                 <h3 className={styles.titleProject}>
                   <strong>mfe-proxy</strong>
                 </h3>
@@ -134,6 +144,12 @@ const Home = () => {
             </a>
             <a href="https://github.com/Chang-CH/draw2p">
               <TurboCard className={styles.cardProject}>
+                <Image
+                  src="/project/icons/draw2p.svg"
+                  width={75}
+                  height={75}
+                  alt="Draw2p Icon"
+                />
                 <h3 className={styles.titleProject}>
                   <strong>draw2p</strong>
                 </h3>
@@ -142,6 +158,12 @@ const Home = () => {
             </a>
             <a href="https://www.hireside.co/">
               <TurboCard className={styles.cardProject}>
+                <Image
+                  src="/project/icons/hireside.svg"
+                  width={75}
+                  height={75}
+                  alt="Hireside Icon"
+                />
                 <h3 className={styles.titleProject}>
                   <strong>Hireside</strong>
                 </h3>
@@ -153,6 +175,12 @@ const Home = () => {
             </a>
             <Link href="/projects">
               <TurboCard className={styles.cardProject}>
+                <Image
+                  src="/project/icons/deadspace.svg"
+                  width={75}
+                  height={75}
+                  alt="Misc Projects Icon"
+                />
                 <h3 className={styles.titleProject}>
                   <strong>Others</strong>
                 </h3>
