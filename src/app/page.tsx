@@ -30,7 +30,7 @@ const Home = () => {
           <div className={styles.splashText}>
             <div>
               <h1 className="text-8xl">Hello :)</h1>
-              <p className={styles.h2}>My name is Chuan Hao</p>
+              <p className={styles.h2}>My name is Chuan</p>
               <p>I write JavaScript not tragedies</p>
               <div className="flex flex-row">
                 <a

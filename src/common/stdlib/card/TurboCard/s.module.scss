@@ -35,6 +35,10 @@ $border-width: 2px;
   padding: 10px;
 }
 
+.divContent:hover {
+  background-image: radial-gradient(circle at 50% 20px, #4d0a1f, #000);
+}
+
 .edgeSpinner {
   content: "";
   position: absolute;

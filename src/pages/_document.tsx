@@ -1,8 +1,8 @@
 import { Head, Html, Main, NextScript } from "next/document";
 
 export const metadata = {
-  title: "C2H",
-  description: "C2H",
+  title: "Chang-CH",
+  description: "Chang-CH",
 };
 
 export default function Document() {
