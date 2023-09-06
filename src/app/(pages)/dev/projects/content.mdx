@@ -1,0 +1,12 @@
+# JsJVM: Web Based Implementation of The JVM
+
+## Week 1
+
+### High level components
+
+Roughly speaking, the JVm is split into 4 areas:
+
+1. Class Loader: loads the class files into memory. does the linking + verification as well.
+2. Execution Engine: executes the bytecode. contains the interpreter, JIT compiler, hotspot profiler etc.
+3. Native Interface: interface to native dlls to call native methods.
+4. Runtime Data Area: contains the stack, heap, etc.

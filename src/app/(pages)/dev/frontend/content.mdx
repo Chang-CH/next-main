@@ -470,11 +470,18 @@ the second button will get rerendered also. Virtual DOM tackles this by determin
    children is not automatically assumed to be diffed (it will check the child also).
 3. Render: React used ReactDOM to update the actual DOM.
 
+React rules:
+
+1. if element changes (`p` to `h1`), entire tree rebuild, does not reconcile children.
+2. if only attribute change (props, css properties), only those changes are applied to DOM. also recurses on children.
+
 This has some problems:
 
 1. Large DOM: very big blog with a clock at the top. Every second the clock updates, so every second React diffs the entire huge blog DOM tree.
    1. [No library]: make the clock a separate component, so only the clock is diffed with itself.
    2. [million js]: Block Virtual DOM, million does static analysis to identify dynamic parts, create an edit map. Only diff the dynamic parts.
+   3. [svelte]: Reactive programming, declare code that should rerun from dependency change
+      - add invalidate component call on state change at compile time. variables dependent on variables use `$: b = a + 1`.
 2. Shared state: 2 deeply nested child components need to share the same state
    1. [No library]: prop drilling, pass the state down to the children, `useEffect` listen to prop change. Causes rerenders at every level.
    2. [No library]: context, create a provider at the top, `useContext` at the bottom. Causes rerenders of all children of context provider also.
@@ -500,7 +507,7 @@ function Parent() {
 ### Hooks overview
 
 1. `useState`: `const [count, setCount] = useState(0);`, states + rerender.
-2. `useEffect`:
+2. `useEffect`: runs side effects after render.
    1. Usage: `useEffect(() => { console.log(count); return ()  => cleanup(); }, [count]);`.
    2. Trigger: After every render (mount + rerender). Functionally similar to `componentDidMount` + `componentDidUpdate`.
    3. Cleanup: optional, have the callback return a function to run, as per `componentWillUnmount`.
@@ -509,6 +516,7 @@ function Parent() {
 4. `useReducer`: basically redux.
 5. `useMemo`: `const cachedValue = useMemo(calculateValue, dependencies)`, memoizes results by dependencies like `useEffect`.
    - useful to avoid expensive function rerunning.
+   - to memoize components by props use `const MemComponent = React.memo(Component, (prevProps, nextProps) => true)`.
 6. `useCallback`: `const cachedFn = useCallback(fn, dependencies)`, avoids running `fn` unless dependencies update (similar to `useEffect`)
    - useful when `cachedFn` is a dependency e.g. `useEffect(..., [cachedFn])`. `fn` changes every rerender but not `cachedFn`.
    - like `useMemo` but instead of returning a value return a function.

@@ -1,0 +1,3 @@
+[submodule "src/app/(pages)/dev/projects/java-slang/java-slang"]
+	path = src/app/(pages)/dev/projects/java-slang/java-slang
+	url = https://github.com/Chang-CH/java-slang
