@@ -1,0 +1,98 @@
+# Mobile interview
+
+## Basic
+
+1. Why does an Android App lag?
+   - task on mainthread taking too long. android render ever 16ms, if main thread still running task, frame is dropped.
+   - GC running too often: avoid autoboxing `Integer` etc. lazy initialize with `org.apache.commons.lang3.concurrent.LazyInitializer`
+2.
+
+## React Native
+
+1. Creation: `npx create-expo-app --template`.
+2. start android emulator, run `expo start`. in menu press `a` to connect to android.
+3. debugging: `ctrl + m` bring up dev menu, `open js debugger`. Chrome opens. check `sources` tab, click pause button, check `pause on caught exceptions`.
+4. debugging: alternatively, create launch.json in debug tab vscode, react native --> attach to packager. also enable JS debugger, take down port. change port in vs code RN packager settings.
+
+### Navigate vs push
+
+- navigate: if a route was previously on the stack, go back to it, else push
+  - home > profile:123 > shop > profile:456, goBack goes to home (second profile goes back to old proile)
+- push: push to stack even if page alr on stack. creates multiple copies of screen.
+
+### Tab navigation vs form navigation
+
+Note: both support code splitting by lazy loading.
+
+- tabs: standard mobile layout, tabs at bottom navigate. `TabNavigator` useful as it handles android back
+- stack: new screens drawn on top of each other.
+
+## Android Development
+
+- create from android studio. naming, if have website e.g. chang.com, name com.chang.app
+- Activity: screen. `onCreate` lifecycle, called when activity created. also `onDestroy` etc. extends `AppCompatActivity`.
+- Android manifest: declares icons, permissions, label etc. like index.html
+
+TODO: https://www.youtube.com/watch?v=BBWyXo-3JGQ
+
+### Kotlin
+
+- null safety: variable cant be null unless specified with `String?`.
+- type inference `val a = 123;` (`a` type is `Int`).
+- kotlin coroutines for async. `launch` to run async code. `async` to run async code and return result. `await` to get result.
+- can compile to JS etc.
+
+### Constructor
+
+- init fields: `class Person(private val name: String, val age: Int)`. `val` is immutable, `val` is mutable.
+- run initial code: `init { println("hello") }`. Can define multiple. executed in sequence.
+- can also define secondary constructors `constructor(a: String, b: String): this(a)` for constructor overloading. `a` is passed to primary constructor.
+- primary constructor init run before secondary.
+- static use companion objects: `companion object { val a = 123 }` (inside class)
+
+### Visibility
+
+- `var`: mutable. `val`: immutable. `const val`: compile time known constant, often becomes inline.
+
+### Functional Programming
+
+- lambdas: `val a = {x -> x + 1}`. `val b = String::plus` etc.
+- higher order functions: can return/take in functions
+- Extension functions: `fun Int.isEven() = this % 2 == 0`. `val a = 123.isEven()`.
+
+### coroutines
+
+- android, most work done on main thread incl rendering. rendering done in between code:
+
+```java
+doSth();
+// updateUI()
+doFetch(); // if takes a long time, next update frame might be dropped. wrap in thread instead.
+// updateUI()
+doSth();
+```
+
+- coroutines are executed within a thread, but suspendable and can continue after pause. can also context switch to other threads.
+- 100k coroutines wont crash, but threads will.
+- include in dependencies kotlin coroutines.
+- `GlobalScope.launch { doSth() }` to run async code. `launch` returns a `Job` object. `launch` is a coroutine builder.
+- coroutine use `delay` instead of `sleep`. (`delay` can only be used in `suspend fun sth()` or in coroutine `launch`)
+- specify dispatcher in coroutine: `GlobalScope.launch(Dispatchers.Main) {...}`
+  - `Dispatchers.Main`: main thread, `Dispatchers.IO`: network, db, files, `Dispatchers.Default`: cpu intensive, `Dispatchers.Unconfined`: inherit parent thread.
+- can context switch in a coroutine, e.g. `withContext(Dispatchers.Main) { renderUI() }` inside a coroutine
+- `runBLocking { delay(3000L) }` to run blocking code in coroutine (or main thread). Good for unit testing, or if blocking not problem.
+- coroutine launch returns job. `job.cancel()` cancels job. `job.join()` waits for job to finish.
+- note that if coroutine is busy e.g. computing large fib, `cancel` may not be processed until coroutine done. check `if (isActive)` if coroutine cancelled.
+- alternatively use `withTimeout`.
+- `async` to run async code and return result. `await` to get result. `val a = async {susFun()}; val res = a.await()`.
+  {/* TODO: https://www.youtube.com/watch?v=uiPYcSSjNTI&list=PLQkwcJG4YTCQcFEPuYGuv54nYai_lwil_&index=8 */}
+
+### Code specific
+
+- string formatting with $: `val a = "hello"; val b = "$a world"`. can also do `${a.length}`.
+
+TODO:
+
+1. Kotlin coroutines
+2.
+3.
