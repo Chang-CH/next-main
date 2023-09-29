@@ -1,0 +1,72 @@
+# Front end interview
+
+## Promise.all
+
+```js
+export default function promiseAll(iterable) {
+  return new Promise((resolve, reject) => {
+    const results = new Array(iterable.length);
+    let unresolved = iterable.length;
+
+    if (unresolved === 0) {
+      // handle empty array
+      resolve(results);
+      return;
+    }
+
+    iterable.forEach((item, index) => {
+      Promise.resolve(item).then(
+        // if item is not a promise convert to one
+        value => {
+          // if item is a promise resolve returns the same object
+          results[index] = value;
+          unresolved -= 1;
+
+          if (unresolved === 0) {
+            resolve(results);
+          }
+        },
+        reason => {
+          reject(reason);
+        }
+      );
+    });
+  });
+}
+```
+
+## usePrevious
+
+Keep the value of the previous state.
+
+```js
+function usePrevious(value, initial) {
+  const ref = useRef({ target: value, previous: initial });
+  if (ref.current.target !== value) {
+    ref.current.previous = ref.current.target;
+    ref.current.target = value;
+  }
+  return ref.current.previous;
+}
+```
+
+## Redux TLDR
+
+```js
+// store.js
+// reducer = (state, action) => newState
+const store = createStore(myReducer);
+export store;
+
+// wrapper
+import { Provider } from "react-redux";
+import {store} from './MyStore'
+<Provider store={store}>
+  <App/>
+</Provider>
+
+// App
+const state = useSelector((allState) => reqState); // rerenders on state change
+const dispatch = useDispatch(); //use hooks from react-redux
+<button onclick={() => dispatch({type: "A", value: "B"})}>{state}</button>
+```

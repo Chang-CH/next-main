@@ -11,13 +11,14 @@
 .h2 {
     font-size: 1.25rem;
     font-weight: 700;
-    width: fit-content;
-    margin-bottom: 0.5rem;
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 16px;
 }
 
 .h2::after {
     content: "";
-    width: 3ch;
+    width: 100%;
     border-bottom: solid 2px #f5165d;
     display: block;
 }
@@ -59,7 +60,7 @@
     margin-bottom: 0.5em;
     margin-left: 0;
     margin-right: 0;
-    padding-left: 25px;
+    padding-left: 30px;
     font-size: 0.8rem;
 }
 
@@ -68,6 +69,6 @@
     margin-bottom: 0.5em;
     margin-left: 0;
     margin-right: 0;
-    padding-left: 25px;
+    padding-left: 30px;
     font-size: 0.8rem;
 }

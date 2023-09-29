@@ -1,0 +1,148 @@
+# React notes
+
+## Rendering
+
+Causes rerenders:
+
+1. `state` change: whole component rerenders including children components(**CHILDREN PROP WILL NOT RERENDER**)
+2. parent rerenders: child also rerenders.
+3. `context` changes: all components that `useContext` it will rerender.
+
+Does not cause rerenders:
+
+1. `props` change: unless `useEffect` dependencies have it. Usually still updates since parent update, child updates.
+
+Preventing rerenders:
+
+1. instead of wrapping expensive component, take in the component as children prop. children prop will not rerender.
+   - `ExpensiveChild2` is owned by `root`, not `Parent`. `Parent` rerender will not affect it.
+
+```js
+//root.js
+<Parent>
+<ExpensiveChild2/>
+</Parent>
+// Parent.js
+<div>
+  <ExpensiveChild /> // rerenders when parent div rerenders
+  {children} // does not rerender.
+</div>
+```
+
+2. `React.memo` (previously `shouldComponentUpdate`): `const ChildMemo = React.Memo(Child); <ChildMemo/>`, only rerenders if props change.
+   - Can provide function to check if props changed: `React.Memo(Child, (prevProps, NextProps) => true)`
+
+## Document Object Model (DOM)
+
+The DOM is a interface for HTML documents. It is not specific to JS.
+It represents all objects in the page as `Node`s. Different `Node` have different `Element` type, e.g. table, form etc.
+Elements can further implement other HTML interfaces, e.g. `HTMLElement`, `HTMLTableElement`, etc.
+HTML elements can be manipulated through the DOM by editing the properties of the interface they implement.
+Notable objects:
+
+1. `window`, `window.onload` etc.
+2. `document`, `document.getElementById()` etc.
+3. `Element.innerHTML`, `HTMLElement.style` etc.
+
+## Virtual DOM
+
+[link](https://blog.logrocket.com/virtual-dom-react/)
+
+Implementing react FC in raw JS, it might look like `() => <div><button/><button/></div>`. Now if we rerender the first button due to state change,
+the second button will get rerendered also. Virtual DOM tackles this by determining what has changed and only updates the parts of the DOM that changed.
+**Reconciliation: syncing VDOM with DOM**
+
+1. Render phase: React creates a replica of the actual DOM tree, from the root element all the way down.
+2. Diffing: say state changed. renderer changes the VDOM. React does DFS to traverse the virtual DOM and compare it with the snapshot of the previous virtual DOM.
+   It then creates a list of differences. Differences do not just mean dirty flag, i.e. if parent component classname changes the diff is only the classname,
+   children is not automatically assumed to be diffed (it will check the child also).
+3. Commit phase: React uses ReactDOM to update the actual DOM.
+
+**React Fiber Reconciler**
+
+1. Allows for pausing and resuming of rendering, different priority levels.
+2. replaces the synchronous react 15 stack reconciler (all at once on main stack). enables `Suspense`, concurrent mode.
+3. A fiber is an object representing a component, its input + output. `type` = component/string. `child`: other fibers. basically old VDOM node.
+
+React rules:
+
+1. if element changes (`p` to `h1`), entire tree rebuild, does not reconcile children.
+2. if only attribute change (props, css properties), only those changes are applied to DOM. also recurses on children.
+
+This has some problems:
+
+1. Large DOM: very big blog with a clock at the top. Every second the clock updates, so every second React diffs the entire huge blog DOM tree.
+   1. [No library]: make the clock a separate component, so only the clock is diffed with itself.
+   2. [million js]: Block Virtual DOM, million does static analysis to identify dynamic parts, create an edit map. Only diff the dynamic parts.
+   3. [svelte]: Reactive programming, declare code that should rerun from dependency change
+      - add `$$invalidate(componentName, newValue)` component call on state change at compile time. variables dependent on variables use `$: b = a + 1`.
+2. Shared state: 2 deeply nested child components need to share the same state
+   1. [No library]: lifting state up: prop drilling, pass the state down to the children, `useEffect` listen to prop change. Causes rerenders at every level.
+   2. [No library]: context, create a provider at the top, `useContext` at the bottom. Causes rerenders of all children of context provider also.
+      can `useMemo` static components to avoid this.
+   3. [Redux]: single giant state store. actually uses context under the hood but is opimized so only updated components rerender (the context never changes).
+   4. [recoil]: atoms and selectors. atoms = state, selectors listen to the atoms/other selectors, when upstream update selector updates
+
+Additional notes:
+
+- React and JSX: `const child = <Child/>` does not actually render child. it is equivalent to `child = React.createElement(Child, null, null);`.
+- `createElement` returns a new object, aka element: `{type: "button", props: {color: blue, children: "text"}}`. Thus comparing the old child to new will always fail
+- if `memo`d (`React.memo(Child)`), object equality passes, so child is not rerendered.
+- `key` prop is used to identify elements of an array. Duplicate key might cause wrong element to be updated. No key provided, react uses array index as key.
+  - same component, same `key`, assumed to be same, state is preserved: `bool ? <Comp f={bool} key={1}/> : <Comp f={bool} key={1}/>`, change `bool` state `Comp` state preserved.
+- if we push at the start of an array without key prop, e.g. `3 1 2`, all 3 elements rerender. if key is set properly react notices only element `3` changed.
+
+```js
+function Parent() {
+  const Elem = <Child />; // Elem is different each rerender.
+  return <div>{Elem}</div>;
+}
+```
+
+## Hooks overview
+
+1. `useState`: `const [count, setCount] = useState(0);`, states + rerender.
+2. `useEffect`: runs side effects after render.
+   1. Usage: `useEffect(() => { console.log(count); return ()  => cleanup(); }, [count]);`.
+   2. Trigger: After every render (mount + rerender). Functionally similar to `componentDidMount` + `componentDidUpdate`.
+   3. Cleanup: optional, have the callback return a function to run, as per `componentWillUnmount`.
+   4. Dependency array: optional, if present, only trigger callback when dependency (state or props) change (check via `===`)
+3. `useContext`: explained later
+4. `useReducer`: basically redux. ` const [state, dispatch] = useReducer(reducer, initialState);`, `reducer = (state, action) => newstate`.
+5. `useMemo`: `const cachedValue = useMemo(calculateValue, dependencies)`, memoizes results by dependencies like `useEffect`.
+   - useful to avoid expensive function rerunning.
+   - to memoize components by props use `const MemComponent = React.memo(Component, (prevProps, nextProps) => true)`.
+6. `useCallback`: `const cachedFn = useCallback(fn, dependencies)`, avoids running `fn` unless dependencies update (similar to `useEffect`)
+   - useful when `cachedFn` is a dependency e.g. `useEffect(..., [cachedFn])`. `fn` changes every rerender but not `cachedFn`.
+   - like `useMemo` but instead of returning a value return a function.
+7. `useRef`: reference a value that does not impact rendering.
+   - value stored across rerenders, on change does not trigger rerender. useful e.g. for storing hidden counter. value persist across rerender.
+   - dom manipulation: `<input ref={inputRef} />`, `inputRef.current` becomes the DOM node of `input`. Can use `focus()`, `scrollIntoView()` etc.
+   - note that dom manipulation is no longer react, might cause unexpected issues (remove DOM node that react still thinks exists)
+
+```js
+// init = optional initializer function, returns initial state. init only run once.
+// initialArg supplied as argument to init. if initialArg no need arguments, can just set initialArg = null.
+const [state, dispatch] = useReducer(reducer, initialArg, init);
+function reducer(state, action) {
+  // if action == ... switch case
+  return [state, dispatch]; // state is initialArg initially.
+}
+// onclick={() => dispatch(action)}
+```
+
+## Context
+
+1. Creating context: `const MyContext = React.createContext(defaultValue);`, this can be exported and imported elsewhere.
+2. Providing context: `<MyContext.Provider value={/* some value */}>{consumers}</MyContext.Provider>`. Update its value here. Closest provider is used.
+3. Using context: `const value = useContext(MyContext);`, in child component.
+
+## Lifecycle order
+
+React lifecycles (class methods) are split into 3 phases: mount, update, unmount.
+
+1. [Mounting] `constructor()` -> `componentWillMount()` -> `getDerivedStateFromProps(props, state)`: Pre render.
+2. [Mounting] `render()` -> `componentDidMount()`: render + post processing
+3. [Updating] `shouldComponentUpdate(nextProps, nextState)` -> `componentWillUpdate()`: pre rerender. `shouldComponentUpdate` can be used to avoid rerendering unnecessarily.
+4. [Updating] rerender -> `componentDidUpdate()`: post update
+5. [Unmounting] `componentWillUnmount()`: cleanup, allows you to cancel timers, clear data structures etc.
