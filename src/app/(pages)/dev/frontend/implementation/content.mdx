@@ -35,6 +35,68 @@ export default function promiseAll(iterable) {
 }
 ```
 
+## Promise
+
+```js
+class Promise {
+  const fn;
+  let status;
+  const thens = [];
+  const _resolve = (value) => {
+    let curr = value;
+    // try catch to reject
+    for (const cb of this.thens) {
+      curr = cb(curr);
+    }
+  };
+
+  let errorHandler;
+  const _reject = (error) => {
+    if (this.errorHandler) {
+      this.errorHandler(error);
+    }
+    throw error;
+  };
+
+  constructor(fn) {
+    this.fn = fn
+    try {
+      fn(_resolve, _reject)
+    } catch(err) {
+      this._reject(err);
+    }
+  }
+
+  catch(onError) {
+    this.errorHandler = onError;
+    return this;
+  }
+
+  then(onSuccess) {
+    this.thens.push(onSuccess);
+    return this;
+  }
+}
+```
+
+## Debounce
+
+Only run function `wait` ms after the **latest** call, then run the function **ONCE**.
+
+```js
+export default function debounce(func, wait = 0) {
+  let timeoutID = null;
+  return function (...args) {
+    // must be a normal function: else this bound to debounce context
+    clearTimeout(timeoutID); // reset timer
+    timeoutID = setTimeout(() => {
+      // Has the same `this` as the outer function's
+      func.apply(this, args); // give func its own this.
+    }, wait);
+  };
+}
+```
+
 ## usePrevious
 
 Keep the value of the previous state.
@@ -69,4 +131,31 @@ import {store} from './MyStore'
 const state = useSelector((allState) => reqState); // rerenders on state change
 const dispatch = useDispatch(); //use hooks from react-redux
 <button onclick={() => dispatch({type: "A", value: "B"})}>{state}</button>
+```
+
+## Jest testing
+
+```js
+// in __tests__
+// import {screen} from '@testing-library/dom'
+beforeEach(() => {
+  // setup test environment. reruns after each test.
+  // can use global variables to pass to test
+});
+
+describe("test suite name", () => {
+  test("test name", () => {
+    // run code
+    expect(result).toBe(expectedValue);
+    // <button data-testid="not-empty"/>
+    expect(screen.queryByTestId("not-empty")).not.toBeEmptyDOMElement();
+    expect(screen.getByText("Visible Example")).toBeVisible();
+  });
+});
+```
+
+## Awaitable sleep
+
+```js
+(sleepFor) => new Promise((resolve) => setTimeout(resolve, sleepFor));
 ```

@@ -1,0 +1,54 @@
+# copy and paste
+
+1. Toposort/DFS
+
+```py
+def toposort(graph):
+    visited = set()
+    stack = []
+    def dfs(node):
+        if node not in visited:
+            visited.add(node)
+            for neighbor in graph[node]:
+                dfs(neighbor)
+            stack.append(node)
+    for node in graph:
+        dfs(node)
+    return stack[::-1]
+```
+
+2. binsearch
+
+```js
+function binsearch(arr, x, start, end) {
+  if (start > end) return -1;
+  let mid = Math.floor((start + end) / 2);
+  if (arr[mid] === x) return mid;
+  if (arr[mid] > x) return binsearch(arr, x, start, mid - 1);
+  else return binsearch(arr, x, mid + 1, end);
+}
+```
+
+## Python builtin
+
+1. sort: `array.sort()`, sorts in place, `sorted(array)`, returns sorted array
+2. reverse: `array.reverse()`, reverses in place
+3. binary search: `bisect.bisect_left(array, target)`, returns index of target if found, else index of where target should be inserted
+4. heap: `heapq.heapify(array)`, `heapq.heappop(array)`, `heapq.heappush(array, item)`.
+5. deque: `collections.deque()`, `deque.append(item)`, `deque.popleft()`.
+6. string reverse: `"string"[::-1]`.
+7. string finding: `"string" in "longstring"`, `"asdf".find("as")`.
+8. set: `a = set()`, `a.add("ele")`, `"ele" in a`, `a.remove("ele")`.
+9. dict: `a = dict()`, `a["key"] = "value"`, `"key" in a`, `del a["key"]`, `list(a.keys())`, `a.values()`.
+
+## Time complexity
+
+1. 10 - 11: `O(N!)` ,`O(n^6)`
+2. 15 - 18: `O(2^N\*N^2)`
+3. 18 - 22: `O(2^N\*N)`
+4. 100: `O(N^4)`
+5. 400: `O(N^3)`
+6. 2000: `O(N^2\*logN)`
+7. 10^4: `O(N^2)`
+8. 10^6: `O(N\*logN)`
+9. 10^8: `O(N)`,`O(logN)`

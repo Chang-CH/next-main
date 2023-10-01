@@ -102,7 +102,7 @@ function Parent() {
 ## Hooks overview
 
 1. `useState`: `const [count, setCount] = useState(0);`, states + rerender.
-2. `useEffect`: runs side effects after render.
+2. `useEffect`: runs side effects **after** render.
    1. Usage: `useEffect(() => { console.log(count); return ()  => cleanup(); }, [count]);`.
    2. Trigger: After every render (mount + rerender). Functionally similar to `componentDidMount` + `componentDidUpdate`.
    3. Cleanup: optional, have the callback return a function to run, as per `componentWillUnmount`.
@@ -118,6 +118,7 @@ function Parent() {
 7. `useRef`: reference a value that does not impact rendering.
    - value stored across rerenders, on change does not trigger rerender. useful e.g. for storing hidden counter. value persist across rerender.
    - dom manipulation: `<input ref={inputRef} />`, `inputRef.current` becomes the DOM node of `input`. Can use `focus()`, `scrollIntoView()` etc.
+   - syntax: `const ref = useRef(null)`. when set as `ref` prop, react sets `.current` to the DOM component.
    - note that dom manipulation is no longer react, might cause unexpected issues (remove DOM node that react still thinks exists)
 
 ```js
@@ -146,3 +147,35 @@ React lifecycles (class methods) are split into 3 phases: mount, update, unmount
 3. [Updating] `shouldComponentUpdate(nextProps, nextState)` -> `componentWillUpdate()`: pre rerender. `shouldComponentUpdate` can be used to avoid rerendering unnecessarily.
 4. [Updating] rerender -> `componentDidUpdate()`: post update
 5. [Unmounting] `componentWillUnmount()`: cleanup, allows you to cancel timers, clear data structures etc.
+
+## SSR
+
+Server side rendering: SEO for First Contentful Paint: the time till the first DOM element is rendered (text/ image etc.).
+
+1. Express server: on `GET` to root, `<div id="root">ReactDOMServer.renderToString(<AppServer />)</div>`.
+2. In webpack entry point (e.g. if webpack `entry: './server/index.js'`), edit index.js to `ReactDOM.hydrate(<AppServer />, document.getElementById('root'));`.
+3. serve client side bundles: `app.use(express.static(path.resolve(__dirname, '../build')));` (for hydration)
+4. client page interactive, full function
+
+Note: data fetching happens on server side.
+
+## SEO
+
+1. title tag
+2. ` <meta name="description" content=...>` meta description tags
+3. consistent headings: 1 h1, h2, h3 in order etc.
+4. image alt property
+5. schema markup: how image previews, authors, publish dates etc. are visible on search results
+6. proper markup: `<header>` instead of `<div class="header">`.
+
+## Controlled Components
+
+- TLDR: controlled = `<input value={state.value}>` vs uncontrolled = `<input ref={createRef()}>`.
+- controlled: state is stored in react, react controls the value of the input. `onChange` updates the state.
+- uncontrolled: state is stored in DOM, DOM controls the value of the input. get value from the ref.
+
+## Next JS RSC
+
+- static rendering: render pages beforehand, request come in, serve.
+- dynamic rendering: request comes, render w/ query params, fetch data, check queries etc, serve.
+- streaming: load main page first, lazy load rest of components in suspense.

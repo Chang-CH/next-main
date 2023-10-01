@@ -1,6 +1,18 @@
 # Front end interview
 
+## HTML
+
+### `<script>`, `<script async>`, `<script defer>` differences
+
+1. `<script>`: blocks html parsing, fetch and run script before resume.
+2. `<script async>`: fetch and run script async. no guarantees on sequence, good for independent scripts e.g. analytics.
+3. `<script defer>`: run after HTML parsed before `DOMContentLoaded`. deferred scripts run in sequence.
+
 ## CSS
+
+Trivia:
+
+- css `float`: allows texts to wrap around blocks a la newspapers.
 
 ### Box model
 
@@ -127,12 +139,23 @@ p {
 In this case, `<p id="demo" class="test" style="color: pink;">` will be pink, since specificity order =
 (**inline style** > **id** > **class, pseudo class, attribute selectors** > **tag, elements, pseudo elements**)
 
-### Layouts
+### Collapsing margins + Block Formatting Context
+
+- collapsing margin: 2 boxes 1 margin 10px 1 margin 15px, margin between the 2 is not 25px but 15px. Only happens when the 2 boxes are in the same BFC.
+- new BFC also makes sure parent BFC size contains floating elements.
+- fix this by shifting 1 into a new BFC, by: `overflow: hidden`, `float: none`, `position: absolute` etc. (recently: `display: flow-root;`, least side effects)
+
+### Stacking context
+
+- within a stacking context, elements are stacked according to their z-index relative to each other.
+- stuff outside the context cannot appear in between layers in a stacking context.
+- easiest way to create context, `position: relative/absolute` w/ `z-index: != auto`.
 
 ## JS
 
 Random stuff:
 
+- `for ... in` for object keys, `for ... of` for array values.
 - `Proxy`: intercepts operations on objects, e.g. `get`, `set`. Example:
 
 ```js
@@ -173,11 +196,11 @@ obj.func(); // obj
 obj2.func(); // obj2
 ```
 
-2. Function: If called directly `get()`, `this` is `undefined` in strict mode, `globalThis` in non strict
+2. global: `this` is `undefined` in strict mode, `globalThis` in non strict, `window` in **browser**.
 3. Callbacks: usually called directly `get()`, undefined.
 4. Arrow functions: `this` is bound by closure to its context at creation (global scope, `globalThis`).
 5. `super`: special case, `this` refers to the current object, not the parent `suepr` is pointing to.
-6. constructor: `this` refers to the object returned by `new`.
+6. constructor: `this` refers to the object returned by `new function()`.
 7. derived constructor:`new Derived()`, `this` = `new Parent()`. constructor must return an object (overrides `this`), or call `super()` first.
 
 ### Var and Hoisting
@@ -425,3 +448,12 @@ child.greet(); // (P)Hello from kid
 - `event.stopPropagation` prevents this from happening.
 - `event.preventDefault` does not stop bubbling. It is used for disabling default actions (e.g. toggling checkboxes)
 - note that in react only 1 root event listener is used, events are passed to react components manually.
+
+
+## A11Y rules
+
+- if a `<div>` or `<span>` is interactable, add `tabIndex={0}` to properties, allows keyboard tab to focus.
+- `aria-label="start button"` for interactive elements (on `input`, `button`, `a`, `img` etc.) to label text for tts.
+- alt text for `img`.
+- `aria-live`: for updates to stuff, e.g. blinking lights, tts will read. `assertive` = urgent, tts immediately. `polite` = tts after current tts finishes.
+- `aria-hidden={true}`: hide from tts, e.g. constantly changing stuff.
